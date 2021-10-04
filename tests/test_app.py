@@ -1,8 +1,9 @@
 """Imported modules/packages"""
+import pytest
 
 from src.app import App
 
 
-def test():
+def test_app():
     app: App = App()
-    assert True == True
+    assert True == app.run()
