@@ -1,6 +1,7 @@
 """Imported modules/packages"""
 from datetime import datetime
 from typing import Optional, List, Dict, Any
+from uuid import UUID
 
 from src.entity.player import Player
 from src.entity.round import Round
@@ -18,6 +19,7 @@ class Tournament(Serializable):
 
     def __init__(
         self,
+        identifier: UUID,
         name: str,
         description: str,
         location: str,
@@ -29,6 +31,7 @@ class Tournament(Serializable):
         """
         Constructor
 
+        :param identifier:
         :param name:
         :param description:
         :param location:
@@ -37,6 +40,7 @@ class Tournament(Serializable):
         :param time_control:
         :param number_of_rounds:
         """
+        self.identifier: UUID = identifier
         self.name: str = name
         self.description: str = description
         self.location: str = location
@@ -110,12 +114,14 @@ class Tournament(Serializable):
 
     def serialize(self) -> Dict[str, Any]:
         return {
+            "id": self.identifier.__str__(),
             "name": self.name,
             "description": self.description,
             "location": self.location,
-            "started_at": self.started_at.strftime("%Y-%m-%d %H:%i:%s"),
-            "ended_at": self.ended_at.strftime("%Y-%m-%d %H:%i:%s") if self.ended_at is not None else None,
+            "started_at": self.started_at.isoformat(),
+            "ended_at": self.ended_at.isoformat() if self.ended_at is not None else None,
             "time_control": self.time_control,
             "number_of_rounds": self.number_of_rounds,
-            "rounds": list(map(lambda round: round.serialize(), self.rounds)),
+            "rounds": list(map(lambda round_: round_.serialize(), self.rounds)),
+            "players": list(map(lambda player: player.identifier.__str__(), self.players)),
         }

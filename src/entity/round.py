@@ -102,4 +102,5 @@ class Round(Serializable):
             "started_at": self.started_at.strftime("%Y-%m-%d %H:%i:%s"),
             "ended_at": self.ended_at.strftime("%Y-%m-%d %H:%i:%s") if self.ended_at is not None else None,
             "matches": list(map(lambda match: match.serialize(), self.matches)),
+            "players": list(map(lambda player: player.identifier.__str__(), self.matches)),
         }

@@ -16,5 +16,5 @@ class App:
         :return:
         """
         self.__launched = True
-        load_dotenv()
+        load_dotenv(".env")
         return self.__launched

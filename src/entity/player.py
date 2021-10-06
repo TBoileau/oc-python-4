@@ -51,7 +51,7 @@ class Player(Serializable):
             "id": self.identifier.__str__(),
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "birthday": self.birthday.strftime("%Y-%m-%d %H:%i:%s"),
+            "birthday": self.birthday.isoformat(),
             "gender": self.gender,
             "ranking": self.ranking,
         }

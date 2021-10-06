@@ -10,6 +10,10 @@ prepare:
 	python3 -m pip install --upgrade pip
 	python3 -m venv $(VENV_NAME)
 	cp .env.dist .env
+	sed -i -e 's/db/db_dev/' .env
+	cp .env.dist .env.test
+	cp fixtures.json db_test.json
+	sed -i -e 's/db/db_test/' .env
 
 install:
 	pip install --no-cache-dir wheel
@@ -30,6 +34,8 @@ analyse:
 	$(PYTHON) -m pycodestyle --max-line-length=120 ./src
 
 tests:
+	rm db_test.json
+	cp fixtures.json db_test.json
 	$(PYTHON) -m pytest --cov=./src --cov-report=html
 
 run:
