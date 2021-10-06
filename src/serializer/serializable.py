@@ -11,5 +11,6 @@ class Serializable(ABC):
     def serialize(self) -> Dict[str, Any]:
         """
         Return serialized data
+
         :return:
         """

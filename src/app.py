@@ -1,4 +1,5 @@
 """Imported modules/packages"""
+from dotenv import load_dotenv
 
 
 class App:
@@ -15,5 +16,5 @@ class App:
         :return:
         """
         self.__launched = True
-
+        load_dotenv(".env")
         return self.__launched

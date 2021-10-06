@@ -9,7 +9,7 @@ from src.entity.tournament import Tournament
 
 
 def test_tournament():
-    tournament: Tournament = Tournament('Name', 'Description', 'Location', datetime.now(), None, Tournament.TYPE_BLITZ)
+    tournament: Tournament = Tournament(uuid.uuid4(), 'Name', 'Description', 'Location', datetime.now(), None, Tournament.TYPE_BLITZ)
 
     with pytest.raises(AssertionError):
         tournament.start()
