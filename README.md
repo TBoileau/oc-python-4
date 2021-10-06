@@ -13,6 +13,8 @@ Préparer votre environnement :
 make prepare
 ```
 
+*Note: Vérifiez bien qu'un fichier `.env` a été créé contenant les variables d'environnement.*
+
 Activer votre environnement :
 ```
 source venv/bin/activate

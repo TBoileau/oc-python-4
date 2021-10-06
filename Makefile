@@ -9,6 +9,7 @@ freeze:
 prepare:
 	python3 -m pip install --upgrade pip
 	python3 -m venv $(VENV_NAME)
+	cp .env.dist .env
 
 install:
 	pip install --no-cache-dir wheel
