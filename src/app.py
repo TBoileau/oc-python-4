@@ -1,5 +1,10 @@
 """Imported modules/packages"""
+import os
+
 from dotenv import load_dotenv
+
+from src.controller.app_controller import AppController
+from src.templating.templating import Templating, TemplatingInterface
 
 
 class App:
@@ -7,14 +12,22 @@ class App:
     App class
     """
 
-    __launched: bool = False
+    def __init__(self):
+        """
+        Constructor
+        """
+        self.__templates_folder: str = os.path.join(os.getcwd(), "templates")
 
-    def run(self) -> bool:
+    def run(self):
         """
         Run app
 
         :return:
         """
-        self.__launched = True
         load_dotenv(".env")
-        return self.__launched
+
+        templating: TemplatingInterface = Templating(self.__templates_folder)
+
+        while True:
+            app_controller: AppController = AppController(templating)
+            app_controller.home()
