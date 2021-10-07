@@ -64,8 +64,8 @@ class Round(Serializable):
 
         if self.position == 1:
             groups: List[List[Player]] = [
-                self.players[: len(self.players) // 2],
-                self.players[len(self.players) // 2:],
+                self.players[: (len(self.players) // 2)],
+                self.players[(len(self.players) // 2):],
             ]
             for i in range(0, len(groups[0])):
                 self.__create_match([groups[0][i], groups[1][i]])
