@@ -1,5 +1,5 @@
 """Imported modules/packages"""
-from typing import Dict
+from typing import Dict, List, Any
 
 from src.dependency_injection.container import ContainerInterface
 from src.router.route import Route
@@ -21,6 +21,6 @@ class Router(RouterInterface):
         self.__routes[route.name] = route
         return self
 
-    def generate(self, name: str):
+    def generate(self, name: str, params: List[Any] = None):
         assert name in self.__routes
-        self.__routes[name].call(self.__container)
+        self.__routes[name].call(self.__container, params)

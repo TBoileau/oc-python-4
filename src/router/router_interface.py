@@ -1,5 +1,6 @@
 """Imported modules/packages"""
 from abc import ABC
+from typing import List, Any
 
 from src.router.route import Route
 
@@ -17,10 +18,11 @@ class RouterInterface(ABC):
         :return:
         """
 
-    def generate(self, name: str):
+    def generate(self, name: str, params: List[Any] = None):
         """
         Search route by name and call it
 
         :param name:
+        :param params:
         :return:
         """
