@@ -52,8 +52,8 @@ class Match(Serializable):
 
     def serialize(self) -> Dict[str, Any]:
         return {
-            "white_player": self.white_player.identifier.__str__(),
-            "black_player": self.black_player.identifier.__str__(),
-            "winner": self.winner.identifier.__str__() if self.winner is not None else None,
+            "white_player": self.white_player.identifier,
+            "black_player": self.black_player.identifier,
+            "winner": self.winner.identifier if self.winner is not None else None,
             "ended": self.ended,
         }
