@@ -17,7 +17,7 @@ class PlayerGateway(ABC):
         :return:
         """
 
-    def find(self, identifier: str) -> Optional[Player]:
+    def find(self, identifier: int) -> Optional[Player]:
         """
         Get a player by his identifier
 

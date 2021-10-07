@@ -20,8 +20,8 @@ tiny_db: TinyDB = TinyDBFactory.create(getenv('DB_URL'))
 def test_find():
     player_factory: PlayerFactoryInterface = PlayerFactory()
     player_repository: PlayerGateway = PlayerRepository(tiny_db, player_factory)
-    assert player_repository.find('fail') is None
-    assert player_repository.find('6f6891be-a71a-47c5-8253-d9c0e583e6bd') is not None
+    assert player_repository.find(0) is None
+    assert player_repository.find(1) is not None
 
 def test_find_all():
     player_factory: PlayerFactoryInterface = PlayerFactory()
@@ -31,7 +31,7 @@ def test_find_all():
 def test_persist():
     player_factory: PlayerFactoryInterface = PlayerFactory()
     player_repository: PlayerGateway = PlayerRepository(tiny_db, player_factory)
-    player: Player = Player(uuid.uuid4(), 'Doe', 'John', date.today(), Player.GENDER_MALE, 1)
+    player: Player = Player('Doe', 'John', date.today(), Player.GENDER_MALE, 1)
     player_repository.persist(player)
     assert len(player_repository.find_all()) == 2
-    assert player_repository.find(player.identifier.__str__()) is not None
+    assert player_repository.find(player.identifier) is not None

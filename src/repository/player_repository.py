@@ -1,8 +1,8 @@
 """Imported modules/packages"""
 from typing import List, Optional, Dict
 
-from tinydb import TinyDB, Query
-from tinydb.table import Table
+from tinydb import TinyDB
+from tinydb.table import Table, Document
 
 from src.entity.player import Player
 from src.factory.player_factory import PlayerFactoryInterface
@@ -17,30 +17,29 @@ class PlayerRepository(PlayerGateway):
     def __init__(self, tiny_db: TinyDB, player_factory: PlayerFactoryInterface):
         self.__player_factory: PlayerFactoryInterface = player_factory
         self.__table: Table = tiny_db.table("players")
-        self.__players: Dict[str, Player] = {}
+        self.__players: Dict[int, Player] = {}
 
     def find_all(self) -> List[Player]:
         players: List[Player] = list(map(self.__player_factory.create, self.__table.all()))
 
         for player in players:
-            self.__players[player.identifier.__str__()] = player
+            self.__players[player.identifier] = player
 
         return list(self.__players.values())
 
-    def find(self, identifier: str) -> Optional[Player]:
+    def find(self, identifier: int) -> Optional[Player]:
         if identifier in self.__players:
             return self.__players[identifier]
 
-        query: Query = Query()
-        data: List[Dict] = self.__table.search(query.id == identifier)
+        data: Optional[Document] = self.__table.get(doc_id=identifier)
 
-        if len(data) == 0:
+        if data is None:
             return None
 
-        self.__players[identifier] = self.__player_factory.create(data[0])
+        self.__players[identifier] = self.__player_factory.create(data)
 
         return self.__players[identifier]
 
     def persist(self, player: Player):
         player.identifier = self.__table.insert(player.serialize())
-        self.__players[player.identifier.__str__()] = player
+        self.__players[player.identifier] = player
