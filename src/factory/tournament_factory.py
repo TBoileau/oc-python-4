@@ -1,27 +1,13 @@
 """Imported modules/packages"""
-from abc import ABC
 from datetime import datetime
-from typing import Dict
-from uuid import UUID
+
+from tinydb.table import Document
 
 from src.entity.match import Match
 from src.entity.round import Round
 from src.entity.tournament import Tournament
+from src.factory.tournament_factory_interface import TournamentFactoryInterface
 from src.gateway.player_gateway import PlayerGateway
-
-
-class TournamentFactoryInterface(ABC):
-    """
-    Tournament factory interface
-    """
-
-    def create(self, data: Dict) -> Tournament:
-        """
-        Create an instance of Tournament
-
-        :param data:
-        :return:
-        """
 
 
 class TournamentFactory(TournamentFactoryInterface):
@@ -37,16 +23,16 @@ class TournamentFactory(TournamentFactoryInterface):
         """
         self.__player_gateway: PlayerGateway = player_gateway
 
-    def create(self, data: Dict) -> Tournament:
+    def create(self, data: Document) -> Tournament:
         tournament: Tournament = Tournament(
-            UUID(data["id"]),
-            data["name"],
-            data["description"],
-            data["location"],
-            datetime.fromisoformat(data["started_at"]),
-            datetime.fromisoformat(data["ended_at"]) if data["ended_at"] is not None else None,
-            data["time_control"],
-            int(data["number_of_rounds"]),
+            identifier=data.doc_id,
+            name=data["name"],
+            description=data["description"],
+            location=data["location"],
+            started_at=datetime.fromisoformat(data["started_at"]),
+            ended_at=datetime.fromisoformat(data["ended_at"]) if data["ended_at"] is not None else None,
+            time_control=data["time_control"],
+            number_of_rounds=int(data["number_of_rounds"]),
         )
 
         for round_raw in data["rounds"]:

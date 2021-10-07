@@ -42,5 +42,5 @@ class TournamentRepository(TournamentGateway):
         return self.__tournaments[identifier]
 
     def persist(self, tournament: Tournament):
-        self.__table.insert(tournament.serialize())
+        tournament.identifier = self.__table.insert(tournament.serialize())
         self.__tournaments[tournament.identifier.__str__()] = tournament

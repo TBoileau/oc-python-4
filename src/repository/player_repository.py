@@ -42,5 +42,5 @@ class PlayerRepository(PlayerGateway):
         return self.__players[identifier]
 
     def persist(self, player: Player):
-        self.__table.insert(player.serialize())
+        player.identifier = self.__table.insert(player.serialize())
         self.__players[player.identifier.__str__()] = player
