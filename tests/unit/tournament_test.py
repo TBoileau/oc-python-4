@@ -9,19 +9,19 @@ from src.entity.tournament import Tournament
 
 
 def test_tournament():
-    tournament: Tournament = Tournament(uuid.uuid4(), 'Name', 'Description', 'Location', datetime.now(), None, Tournament.TYPE_BLITZ)
+    tournament: Tournament = Tournament('Name', 'Description', 'Location', datetime.now(), None, Tournament.TYPE_BLITZ)
 
     with pytest.raises(AssertionError):
         tournament.start()
 
-    player_1: Player = Player(uuid.uuid4(), "1", "Player", date.today(), Player.GENDER_MALE, 1)
-    player_2: Player = Player(uuid.uuid4(), "2", "Player", date.today(), Player.GENDER_MALE, 2)
-    player_3: Player = Player(uuid.uuid4(), "3", "Player", date.today(), Player.GENDER_MALE, 3)
-    player_4: Player = Player(uuid.uuid4(), "4", "Player", date.today(), Player.GENDER_MALE, 4)
-    player_5: Player = Player(uuid.uuid4(), "5", "Player", date.today(), Player.GENDER_MALE, 5)
-    player_6: Player = Player(uuid.uuid4(), "6", "Player", date.today(), Player.GENDER_MALE, 6)
-    player_7: Player = Player(uuid.uuid4(), "7", "Player", date.today(), Player.GENDER_MALE, 7)
-    player_8: Player = Player(uuid.uuid4(), "8", "Player", date.today(), Player.GENDER_MALE, 8)
+    player_1: Player = Player("1", "Player", date.today(), Player.GENDER_MALE, 1)
+    player_2: Player = Player("2", "Player", date.today(), Player.GENDER_MALE, 2)
+    player_3: Player = Player("3", "Player", date.today(), Player.GENDER_MALE, 3)
+    player_4: Player = Player("4", "Player", date.today(), Player.GENDER_MALE, 4)
+    player_5: Player = Player("5", "Player", date.today(), Player.GENDER_MALE, 5)
+    player_6: Player = Player("6", "Player", date.today(), Player.GENDER_MALE, 6)
+    player_7: Player = Player("7", "Player", date.today(), Player.GENDER_MALE, 7)
+    player_8: Player = Player("8", "Player", date.today(), Player.GENDER_MALE, 8)
 
     tournament.register(player_1)
 

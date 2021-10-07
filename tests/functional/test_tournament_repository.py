@@ -25,8 +25,8 @@ def test_find():
     player_repository: PlayerGateway = PlayerRepository(tiny_db, player_factory)
     tournament_factory: TournamentFactoryInterface = TournamentFactory(player_repository)
     tournament_repository: TournamentGateway = TournamentRepository(tiny_db, tournament_factory)
-    assert tournament_repository.find('fail') is None
-    assert tournament_repository.find('8c265135-c6a6-4652-897a-ec02b787a41d') is not None
+    assert tournament_repository.find(0) is None
+    assert tournament_repository.find(1) is not None
 
 def test_find_all():
     player_factory: PlayerFactoryInterface = PlayerFactory()
@@ -40,8 +40,8 @@ def test_persist():
     player_repository: PlayerGateway = PlayerRepository(tiny_db, player_factory)
     tournament_factory: TournamentFactoryInterface = TournamentFactory(player_repository)
     tournament_repository: TournamentGateway = TournamentRepository(tiny_db, tournament_factory)
-    tournament: Tournament = Tournament(uuid.uuid4(), 'Tournament', 'Description', 'Paris', datetime.now(), None, Tournament.TYPE_BLITZ)
-    tournament.register(player_repository.find('6f6891be-a71a-47c5-8253-d9c0e583e6bd'))
+    tournament: Tournament = Tournament('Tournament', 'Description', 'Paris', datetime.now(), None, Tournament.TYPE_BLITZ)
+    tournament.register(player_repository.find(1))
     tournament_repository.persist(tournament)
     assert len(tournament_repository.find_all()) == 2
-    assert tournament_repository.find(tournament.identifier.__str__()) is not None
+    assert tournament_repository.find(tournament.identifier) is not None

@@ -16,6 +16,15 @@ class ContainerInterface(ABC):
         :return:
         """
 
+    def set(self, name: Type, obj: object) -> "ContainerInterface":
+        """
+        Get service by name
+
+        :param obj:
+        :param name:
+        :return:
+        """
+
     def alias(self, alias: Union[Type, Any], name: Union[Type, Any]):
         """
         Add alias

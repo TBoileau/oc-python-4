@@ -17,7 +17,7 @@ class TournamentGateway(ABC):
         :return:
         """
 
-    def find(self, identifier: str) -> Optional[Tournament]:
+    def find(self, identifier: int) -> Optional[Tournament]:
         """
         Get a tournament by his identifier
 

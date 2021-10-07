@@ -1,5 +1,5 @@
 """Imported modules/packages"""
-from typing import Type
+from typing import Type, List, Any
 
 from src.dependency_injection.container import ContainerInterface
 
@@ -21,11 +21,14 @@ class Route:
         self.controller: Type = controller
         self.action: str = action
 
-    def call(self, container: ContainerInterface):
+    def call(self, container: ContainerInterface, params: List[Any] = None):
         """
         Call the callback
 
         :param container:
+        :param params:
         :return:
         """
-        getattr(container.get(self.controller), self.action)()
+        if params is None:
+            params = []
+        getattr(container.get(self.controller), self.action)(*params)

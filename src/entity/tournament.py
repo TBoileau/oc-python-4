@@ -1,7 +1,6 @@
 """Imported modules/packages"""
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from uuid import UUID
 
 from src.entity.player import Player
 from src.entity.round import Round
@@ -19,7 +18,6 @@ class Tournament(Serializable):
 
     def __init__(
         self,
-        identifier: UUID,
         name: str,
         description: str,
         location: str,
@@ -27,11 +25,12 @@ class Tournament(Serializable):
         ended_at: Optional[datetime],
         time_control: str,
         number_of_rounds: int = 4,
+        state: str = "pending",
+        identifier: int = None,
     ):
         """
         Constructor
 
-        :param identifier:
         :param name:
         :param description:
         :param location:
@@ -39,8 +38,10 @@ class Tournament(Serializable):
         :param ended_at:
         :param time_control:
         :param number_of_rounds:
+        :param state:
+        :param identifier:
         """
-        self.identifier: UUID = identifier
+        self.identifier: int = identifier
         self.name: str = name
         self.description: str = description
         self.location: str = location
@@ -51,6 +52,7 @@ class Tournament(Serializable):
         self.time_control: str = time_control
         self.number_of_rounds: int = number_of_rounds
         self.__current_round_position: int = 0
+        self.state: str = state
 
     def register(self, player: Player) -> "Tournament":
         """
@@ -114,8 +116,9 @@ class Tournament(Serializable):
 
     def serialize(self) -> Dict[str, Any]:
         return {
-            "id": self.identifier.__str__(),
+            "id": self.identifier,
             "name": self.name,
+            "state": self.state,
             "description": self.description,
             "location": self.location,
             "started_at": self.started_at.isoformat(),
@@ -123,5 +126,5 @@ class Tournament(Serializable):
             "time_control": self.time_control,
             "number_of_rounds": self.number_of_rounds,
             "rounds": list(map(lambda round_: round_.serialize(), self.rounds)),
-            "players": list(map(lambda player: player.identifier.__str__(), self.players)),
+            "players": list(map(lambda player: player.identifier, self.players)),
         }

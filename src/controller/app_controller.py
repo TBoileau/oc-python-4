@@ -36,6 +36,10 @@ class AppController(AbstractController):
         )
         self._choice(
             home_input,
-            {0: lambda: self.redirect("app_quit"), 1: lambda: self.redirect("tournament_create")},
+            {
+                0: lambda: self.redirect("app_quit"),
+                1: lambda: self.redirect("tournament_create"),
+                2: lambda: self.redirect("tournament_list"),
+            },
             "app/home",
         )

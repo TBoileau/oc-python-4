@@ -1,7 +1,6 @@
 """Imported modules/packages"""
 from datetime import date
 from typing import List, Dict, Any
-from uuid import UUID
 
 from src.serializer.serializable import Serializable
 
@@ -15,18 +14,19 @@ class Player(Serializable):
     GENDER_FEMALE: str = "female"
     GENDER_NON_BINARY: str = "non binary"
 
-    def __init__(self, identifier: UUID, last_name: str, first_name: str, birthday: date, gender: str, ranking: int):
+    def __init__(
+        self, last_name: str, first_name: str, birthday: date, gender: str, ranking: int, identifier: int = None
+    ):
         """
         Constructor
 
-        :param identifier:
         :param last_name:
         :param first_name:
         :param birthday:
         :param gender:
         :param ranking:
+        :param identifier:
         """
-        self.identifier: UUID = identifier
         self.last_name: str = last_name
         self.first_name: str = first_name
         self.birthday: date = birthday
@@ -34,6 +34,7 @@ class Player(Serializable):
         self.ranking: int = ranking
         self.points: float = 0
         self.opponents: List["Player"] = []
+        self.identifier: int = identifier
 
     def play_against(self, opponent: "Player") -> "Player":
         """
@@ -48,7 +49,7 @@ class Player(Serializable):
 
     def serialize(self) -> Dict[str, Any]:
         return {
-            "id": self.identifier.__str__(),
+            "id": self.identifier,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "birthday": self.birthday.isoformat(),

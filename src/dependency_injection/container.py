@@ -44,6 +44,10 @@ class Container(ContainerInterface):
         module: ModuleType = importlib.import_module(type_[0: type_.rfind(".")])
         return getattr(module, type_[type_.rfind(".") + 1:])(*args)
 
+    def set(self, name: Type, obj: object) -> "Container":
+        self.__instances[Container.get_type(name)] = obj
+        return self
+
     def get(self, name: Union[Type, str]) -> Any:
         if name in self.__parameters:
             return self.__parameters[name]
