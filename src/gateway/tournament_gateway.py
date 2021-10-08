@@ -31,3 +31,11 @@ class TournamentGateway(ABC):
         :param tournament:
         :return:
         """
+
+    def update(self, tournament: Tournament):
+        """
+        Update tournament
+
+        :param tournament:
+        :return:
+        """
