@@ -1,0 +1,9 @@
+Identifiant : {identifier}
+Nom : {name}
+Description : {description}
+Localisation : {location}
+Début : {started_at}
+Fin : {ended_at}
+Nombre de rondes : {number_of_rounds}
+Nombre de joueurs inscrits : {number_of_players}
+Type : {time_control}

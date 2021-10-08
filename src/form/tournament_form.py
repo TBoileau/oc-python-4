@@ -1,9 +1,8 @@
 """Imported modules/packages"""
 import re
-import uuid
 from datetime import datetime
 from re import Pattern
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from src.entity.tournament import Tournament
 from src.form.form import Form
@@ -16,17 +15,26 @@ class TournamentForm(Form):
     Tournament form
     """
 
-    def _transform(self, values: Dict[str, Any], data: Any = None) -> Tournament:
-        return Tournament(
-            identifier=uuid.uuid4(),
-            name=values["name"],
-            description=values["description"],
-            location=values["location"],
-            started_at=values["started_at"],
-            ended_at=values["ended_at"],
-            number_of_rounds=values["number_of_rounds"],
-            time_control=values["time_control"],
-        )
+    def _transform(self, values: Dict[str, Any], data: Optional[Tournament] = None) -> Tournament:
+        if data is None:
+            return Tournament(
+                name=values["name"],
+                description=values["description"],
+                location=values["location"],
+                started_at=values["started_at"],
+                ended_at=values["ended_at"],
+                number_of_rounds=values["number_of_rounds"],
+                time_control=values["time_control"],
+            )
+
+        data.name = values["name"]
+        data.description = values["description"]
+        data.location = values["location"]
+        data.started_at = values["started_at"]
+        data.ended_at = values["ended_at"]
+        data.number_of_rounds = values["number_of_rounds"]
+        data.time_control = values["time_control"]
+        return data
 
     def _build(self, inputs: Dict[str, Input]):
         date_pattern: Pattern = re.compile(r"^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$")
@@ -74,7 +82,6 @@ class TournamentForm(Form):
             label="Date de fin (JJ/MM/AAAA HH:MM) : ",
             message="Veuillez saisir un date et heure au format suivant : JJ/MM/AAAA HH:MM.",
             validate=lambda raw_data: raw_data.strip() == ""
-            or date_pattern.match(raw_data) is not None
-            and Datetime.is_valid(raw_data, "%d/%m/%Y %H:%M"),
-            transform=lambda raw_data: datetime.strptime(raw_data, "%d/%m/%Y %H:%M"),
+            or (date_pattern.match(raw_data) is not None and Datetime.is_valid(raw_data, "%d/%m/%Y %H:%M")),
+            transform=lambda raw_data: datetime.strptime(raw_data, "%d/%m/%Y %H:%M") if raw_data != "" else None,
         )
