@@ -7,6 +7,8 @@ Fin : {ended_at}
 Nombre de rondes : {number_of_rounds}
 Nombre de joueurs inscrits : {number_of_players}
 Type : {time_control}
+Statut : {state}
+
 
 Actions :
 - R : Retour
