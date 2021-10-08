@@ -17,7 +17,7 @@ class Input:
     def __init__(
         self,
         label: str,
-        message: str,
+        message: str = "",
         transform: Callable = lambda raw_data: raw_data,
         validate: Callable = lambda raw_data: True,
     ):

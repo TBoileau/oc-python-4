@@ -214,7 +214,7 @@ class TournamentController(AbstractController):
             label="Que souhaitez-vous faire ? ",
             message="Veuillez saisir un action.",
             transform=str,
-            validate=lambda raw_data: raw_data in ["R", "J", "I"],
+            validate=lambda raw_data: raw_data in ["R", "J", "I", "M"],
         )
 
         tournament: Tournament = self.__tournament_gateway.find(identifier)
@@ -224,9 +224,46 @@ class TournamentController(AbstractController):
             {
                 "R": lambda: self.redirect("tournament_list"),
                 "J": lambda: self.redirect("tournament_players", [identifier]),
+                "M": lambda: self.redirect("tournament_update", [identifier]),
                 "I": lambda: self.redirect("tournament_registration", [identifier]),
             },
             "tournament/read",
+            {
+                "identifier": tournament.identifier,
+                "name": tournament.name,
+                "state": tournament.state,
+                "description": tournament.description,
+                "location": tournament.location,
+                "started_at": tournament.started_at.strftime("%d/%m/%Y %H:%M"),
+                "ended_at": tournament.ended_at.strftime("%d/%m/%Y %H:%M")
+                if tournament.ended_at is not None
+                else "N/C",
+                "time_control": tournament.time_control,
+                "number_of_rounds": tournament.number_of_rounds,
+                "number_of_players": len(tournament.players),
+            },
+        )
+
+    def update(self, identifier: int):
+        """
+        Update tournament
+
+        :param identifier:
+        :return:
+        """
+
+        tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        def handler(tournament_: Tournament):
+            self.__tournament_gateway.update(tournament_)
+            Console.print("Tournois modifié avec succès !", Console.SUCCESS)
+            time.sleep(3)
+            self.redirect("tournament_read", [identifier])
+
+        form: TournamentForm = TournamentForm(handler, tournament)
+        self._form(
+            form,
+            "tournament/update",
             {
                 "identifier": tournament.identifier,
                 "name": tournament.name,
