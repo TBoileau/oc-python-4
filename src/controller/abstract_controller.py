@@ -46,7 +46,7 @@ _______________________________________________________________________________
         )
         self.__router.generate(name, params)
 
-    def _choice(self, input_: Input, choices: Dict[int, Callable], view: str = None, data=None):
+    def _choice(self, input_: Input, choices: Dict[Any, Callable], view: str = None, data=None):
         """
         Render choice
 

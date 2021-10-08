@@ -68,24 +68,57 @@ class TournamentController(AbstractController):
             label="Saisissez l'identifiant du tournois que vous souhaitez sélectionner (0 pour quitter) : ",
             message="Veuillez saisir 0 ou un identifiant parmi la liste.",
             transform=int,
-            validate=lambda raw_data: raw_data.isnumeric() and int(raw_data) in identifiers,
+            validate=lambda raw_data: raw_data.isnumeric() and int(raw_data) in [0] + identifiers,
         )
 
-        def redirect_to_tournament(tournament: Tournament) -> Callable:
-            return lambda: self.redirect("tournament_read", [tournament.identifier])
+        def redirect_to_tournament(identifier: int) -> Callable:
+            return lambda: self.redirect("tournament_read", [identifier])
 
         self._choice(
             input_,
             {
-                **{0: lambda: self.redirect("home")},
-                **dict(zip(map(redirect_to_tournament, tournaments), range(1, len(tournaments)))),
+                **{0: lambda: self.redirect("app_home")},
+                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
             },
         )
 
-    def read(self, identifier):
+    def read(self, identifier: int):
         """
         Read tournament
 
         :param identifier:
         :return:
         """
+
+        input_: Input = Input(
+            label="Que souhaitez-vous faire ? ",
+            message="Veuillez saisir un action ?",
+            transform=str,
+            validate=lambda raw_data: raw_data in ["R", "D", "M", "D"],
+        )
+
+        tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        self._choice(
+            input_,
+            {
+                "R": lambda: self.redirect("tournament_list"),
+                "M": lambda: self.redirect("tournament_list"),
+                "S": lambda: self.redirect("tournament_list"),
+                "D": lambda: self.redirect("tournament_list"),
+            },
+            "tournament/read",
+            {
+                "identifier": tournament.identifier,
+                "name": tournament.name,
+                "state": tournament.state,
+                "description": tournament.description,
+                "location": tournament.location,
+                "started_at": tournament.started_at.strftime("%d/%m/%Y %H:%M"),
+                "ended_at": tournament.ended_at.strftime("%d/%m/%Y %H:%M")
+                if tournament.ended_at is not None
+                else "N/C",
+                "time_control": tournament.time_control,
+                "number_of_rounds": tournament.number_of_rounds,
+            },
+        )

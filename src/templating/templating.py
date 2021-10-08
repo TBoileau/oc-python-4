@@ -17,4 +17,4 @@ class Templating(TemplatingInterface):
         if data is None:
             data = {}
         with open(os.path.join(self.__directory, view), encoding=locale.getpreferredencoding()) as template:
-            return str(template.read()).format(data)
+            return str(template.read()).format(**data)

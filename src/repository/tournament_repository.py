@@ -20,6 +20,8 @@ class TournamentRepository(TournamentGateway):
         self.__tournaments: Dict[int, Tournament] = {}
 
     def find_all(self) -> List[Tournament]:
+        self.__tournaments.clear()
+
         tournaments: List[Tournament] = list(map(self.__tournament_factory.create, self.__table.all()))
 
         for tournament in tournaments:
