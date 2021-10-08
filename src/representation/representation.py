@@ -11,8 +11,9 @@ class Representation(RepresentationInterface):
     Representation class
     """
 
-    __headers: Dict[int, Header] = {}
-    __data: List[Dict[int, str]] = []
+    def __init__(self):
+        self.__headers: Dict[int, Header] = {}
+        self.__data: List[Dict[int, str]] = []
 
     def add_header(self, header: Header):
         self.__headers[header.order] = header
@@ -30,7 +31,7 @@ class Representation(RepresentationInterface):
     def render(self):
         assert len(self.__headers) > 0
 
-        self.__print_line([(header.label, header.order) for header in self.__headers.values()])
+        self.__print_line([(header.label, header.order) for header in self.__headers.values()], True)
 
         if len(self.__data) == 0:
             self.__print_line([("", index) for index in self.__headers])
