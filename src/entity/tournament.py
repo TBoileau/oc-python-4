@@ -5,9 +5,11 @@ from typing import Optional, List, Dict, Any
 from src.entity.player import Player
 from src.entity.round import Round
 from src.serializer.serializable import Serializable
+from src.workflow.subject import Subject
+from src.workflow.transition import Transition
 
 
-class Tournament(Serializable):
+class Tournament(Serializable, Subject):
     """
     Tournament class
     """
@@ -127,4 +129,24 @@ class Tournament(Serializable):
             "number_of_rounds": self.number_of_rounds,
             "rounds": list(map(lambda round_: round_.serialize(), self.rounds)),
             "players": list(map(lambda player: player.identifier, self.players)),
+        }
+
+    def get_state(self) -> str:
+        return self.state
+
+    def set_state(self, state: str):
+        self.state = state
+
+    def get_transitions(self) -> Dict[str, Transition]:
+        return {
+            "start": Transition(
+                name="start",
+                from_states=["pending"],
+                to_state="started",
+                guard=lambda tournament: len(tournament.players) > 0
+                and len(tournament.players) > tournament.number_of_rounds > 0,
+                completed=lambda tournament: tournament.start(),
+            ),
+            "finish": Transition("finish", ["started"], "finished"),
+            "delete": Transition("delete", ["pending"], "deleted"),
         }

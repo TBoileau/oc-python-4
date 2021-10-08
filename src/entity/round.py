@@ -14,7 +14,7 @@ class Round(Serializable):
     Round class
     """
 
-    def __init__(self, position: int, started_at: datetime, players: List[Player]):
+    def __init__(self, position: int, started_at: datetime, players: List[Player], ended_at: Optional[datetime] = None):
         """
         Constructor
 
@@ -22,7 +22,7 @@ class Round(Serializable):
         """
         self.position: int = position
         self.started_at: datetime = started_at
-        self.ended_at: Optional[datetime] = None
+        self.ended_at: Optional[datetime] = ended_at
         self.players: List[Player] = players
         self.matches: List[Match] = []
 
@@ -99,8 +99,8 @@ class Round(Serializable):
     def serialize(self) -> Dict[str, Any]:
         return {
             "position": self.position,
-            "started_at": self.started_at.strftime("%Y-%m-%d %H:%i:%s"),
-            "ended_at": self.ended_at.strftime("%Y-%m-%d %H:%i:%s") if self.ended_at is not None else None,
+            "started_at": self.started_at.isoformat(),
+            "ended_at": self.ended_at.isoformat() if self.ended_at is not None else None,
             "matches": list(map(lambda match: match.serialize(), self.matches)),
-            "players": list(map(lambda player: player.identifier, self.matches)),
+            "players": list(map(lambda player: player.identifier, self.players)),
         }

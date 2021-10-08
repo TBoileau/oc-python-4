@@ -15,6 +15,7 @@ from src.representation.representation import Representation
 from src.representation.representation_factory_interface import RepresentationFactoryInterface
 from src.router.router_interface import RouterInterface
 from src.templating.templating_interface import TemplatingInterface
+from src.workflow.workflow_interface import WorkflowInterface
 
 
 class TournamentController(AbstractController):
@@ -29,11 +30,13 @@ class TournamentController(AbstractController):
         tournament_gateway: TournamentGateway,
         player_gateway: PlayerGateway,
         representation_factory: RepresentationFactoryInterface,
+        workflow: WorkflowInterface,
     ):
         super().__init__(templating, router)
         self.__tournament_gateway: TournamentGateway = tournament_gateway
         self.__player_gateway: PlayerGateway = player_gateway
         self.__representation_factory: RepresentationFactoryInterface = representation_factory
+        self.__workflow: WorkflowInterface = workflow
 
     def create(self):
         """
@@ -59,6 +62,9 @@ class TournamentController(AbstractController):
         :return:
         """
         tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        if tournament.get_state() != "pending":
+            Console.print("Vous ne pouvez pas inscrire un joueur alors dans un tournois commencé.", Console.FAIL)
 
         player: Player = self.__player_gateway.find(player_id)
 
@@ -134,6 +140,9 @@ class TournamentController(AbstractController):
         :return:
         """
         tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        if tournament.get_state() != "pending":
+            Console.print("Vous ne pouvez pas inscrire un joueur alors dans un tournois commencé.", Console.FAIL)
 
         players: List[Player] = [
             player for player in self.__player_gateway.find_all() if player not in tournament.players
@@ -214,7 +223,7 @@ class TournamentController(AbstractController):
             label="Que souhaitez-vous faire ? ",
             message="Veuillez saisir un action.",
             transform=str,
-            validate=lambda raw_data: raw_data in ["R", "J", "I", "M"],
+            validate=lambda raw_data: raw_data in ["R", "J", "I", "M", "D"],
         )
 
         tournament: Tournament = self.__tournament_gateway.find(identifier)
@@ -225,6 +234,7 @@ class TournamentController(AbstractController):
                 "R": lambda: self.redirect("tournament_list"),
                 "J": lambda: self.redirect("tournament_players", [identifier]),
                 "M": lambda: self.redirect("tournament_update", [identifier]),
+                "D": lambda: self.redirect("tournament_start", [identifier]),
                 "I": lambda: self.redirect("tournament_registration", [identifier]),
             },
             "tournament/read",
@@ -254,6 +264,9 @@ class TournamentController(AbstractController):
 
         tournament: Tournament = self.__tournament_gateway.find(identifier)
 
+        if tournament.get_state() != "pending":
+            Console.print("Vous ne pouvez pas modifier un tournois commencé.", Console.FAIL)
+
         def handler(tournament_: Tournament):
             self.__tournament_gateway.update(tournament_)
             Console.print("Tournois modifié avec succès !", Console.SUCCESS)
@@ -279,3 +292,23 @@ class TournamentController(AbstractController):
                 "number_of_players": len(tournament.players),
             },
         )
+
+    def start(self, identifier: int):
+        """
+        Start tournament
+
+        :param identifier:
+        :return:
+        """
+        tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        if not self.__workflow.can(tournament, "start"):
+            Console.print("Vous ne pouvez pas démarrer ce tournois.", Console.FAIL)
+            self.redirect("tournament_read", [identifier])
+
+        self.__workflow.apply(tournament, "start")
+
+        self.__tournament_gateway.update(tournament)
+        Console.print("Tournois démarré avec succès !", Console.SUCCESS)
+        time.sleep(3)
+        self.redirect("tournament_read", [identifier])

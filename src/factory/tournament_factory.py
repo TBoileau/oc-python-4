@@ -28,6 +28,7 @@ class TournamentFactory(TournamentFactoryInterface):
             identifier=data.doc_id,
             name=data["name"],
             description=data["description"],
+            state=data["state"],
             location=data["location"],
             started_at=datetime.fromisoformat(data["started_at"]),
             ended_at=datetime.fromisoformat(data["ended_at"]) if data["ended_at"] is not None else None,
@@ -40,17 +41,20 @@ class TournamentFactory(TournamentFactoryInterface):
 
         for round_raw in data["rounds"]:
             round_: Round = Round(
-                int(round_raw["position"]),
-                datetime.fromisoformat(round_raw["started_at"]),
-                list(map(self.__player_gateway.find, round_raw["players"])),
+                position=int(round_raw["position"]),
+                started_at=datetime.fromisoformat(round_raw["started_at"]),
+                ended_at=datetime.fromisoformat(round_raw["ended_at"]) if round_raw["ended_at"] is not None else None,
+                players=list(map(self.__player_gateway.find, map(int, round_raw["players"]))),
             )
 
             for match_raw in round_raw["matches"]:
                 match: Match = Match(
-                    self.__player_gateway.find(match_raw["white_player"]),
-                    self.__player_gateway.find(match_raw["black_player"]),
+                    self.__player_gateway.find(int(match_raw["white_player"])),
+                    self.__player_gateway.find(int(match_raw["black_player"])),
                 )
-                match.winner = self.__player_gateway.find(match_raw["winner"])
+                match.winner = (
+                    self.__player_gateway.find(int(match_raw["winner"])) if match_raw["winner"] is not None else None
+                )
                 match.ended = bool(match_raw["ended"])
                 round_.matches.append(match)
 
