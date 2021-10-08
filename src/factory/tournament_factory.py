@@ -35,6 +35,9 @@ class TournamentFactory(TournamentFactoryInterface):
             number_of_rounds=int(data["number_of_rounds"]),
         )
 
+        for player_identifier in data["players"]:
+            tournament.players.append(self.__player_gateway.find(int(player_identifier)))
+
         for round_raw in data["rounds"]:
             round_: Round = Round(
                 int(round_raw["position"]),

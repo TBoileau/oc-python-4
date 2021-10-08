@@ -23,7 +23,8 @@ class PlayerRepository(PlayerGateway):
         players: List[Player] = list(map(self.__player_factory.create, self.__table.all()))
 
         for player in players:
-            self.__players[player.identifier] = player
+            if player.identifier not in self.__players:
+                self.__players[player.identifier] = player
 
         return list(self.__players.values())
 

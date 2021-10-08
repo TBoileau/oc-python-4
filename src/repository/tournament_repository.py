@@ -20,12 +20,11 @@ class TournamentRepository(TournamentGateway):
         self.__tournaments: Dict[int, Tournament] = {}
 
     def find_all(self) -> List[Tournament]:
-        self.__tournaments.clear()
-
         tournaments: List[Tournament] = list(map(self.__tournament_factory.create, self.__table.all()))
 
         for tournament in tournaments:
-            self.__tournaments[tournament.identifier] = tournament
+            if tournament.identifier not in self.__tournaments:
+                self.__tournaments[tournament.identifier] = tournament
 
         return list(self.__tournaments.values())
 
@@ -44,4 +43,8 @@ class TournamentRepository(TournamentGateway):
 
     def persist(self, tournament: Tournament):
         tournament.identifier = self.__table.insert(tournament.serialize())
+        self.__tournaments[tournament.identifier] = tournament
+
+    def update(self, tournament: Tournament):
+        self.__table.update(tournament.serialize(), doc_ids=[tournament.identifier])
         self.__tournaments[tournament.identifier] = tournament

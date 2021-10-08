@@ -75,3 +75,7 @@ class App:
         router.add(Route("tournament_list", TournamentController, "list"))
         router.add(Route("tournament_read", TournamentController, "read"))
         router.add(Route("tournament_update", TournamentController, "update"))
+        router.add(Route("tournament_players", TournamentController, "players"))
+        router.add(Route("tournament_register", TournamentController, "register"))
+        router.add(Route("tournament_unregister", TournamentController, "unregister"))
+        router.add(Route("tournament_registration", TournamentController, "registration"))
