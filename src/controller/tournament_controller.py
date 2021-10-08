@@ -32,7 +32,7 @@ class TournamentController(AbstractController):
     ):
         super().__init__(templating, router)
         self.__tournament_gateway: TournamentGateway = tournament_gateway
-        self.player_gateway: PlayerGateway = player_gateway
+        self.__player_gateway: PlayerGateway = player_gateway
         self.__representation_factory: RepresentationFactoryInterface = representation_factory
 
     def create(self):
@@ -60,13 +60,32 @@ class TournamentController(AbstractController):
         """
         tournament: Tournament = self.__tournament_gateway.find(identifier)
 
-        player: Player = self.player_gateway.find(player_id)
+        player: Player = self.__player_gateway.find(player_id)
 
         tournament.players.remove(player)
 
         self.__tournament_gateway.update(tournament)
 
         Console.print("Joueur désinscrit avec succès.", Console.SUCCESS)
+
+        self.redirect("tournament_players", [identifier])
+
+    def register(self, identifier: int, player_id: int):
+        """
+        Register player from tournament
+        :param identifier:
+        :param player_id:
+        :return:
+        """
+        tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        player: Player = self.__player_gateway.find(player_id)
+
+        tournament.players.append(player)
+
+        self.__tournament_gateway.update(tournament)
+
+        Console.print("Joueur inscrit avec succès.", Console.SUCCESS)
 
         self.redirect("tournament_players", [identifier])
 
@@ -87,11 +106,11 @@ class TournamentController(AbstractController):
         identifiers: List[Any] = list(map(lambda player: str(player.identifier), tournament.players))
 
         input_: Input = Input(
-            label="Saisissez l'identifiant d'un joueur que vous souhaitez supprimer"
-                  "A pour ajouter un joueur ou R pour retour : ",
-            message="Veuillez saisir 'A', 'R' ou un identifiant parmi la liste.",
+            label="Saisissez l'identifiant d'un joueur que vous souhaitez désinscrire"
+            ", I pour inscrire un joueur ou R pour retour : ",
+            message="Veuillez saisir 'A', 'R', 'I ou un identifiant parmi la liste.",
             transform=str,
-            validate=lambda raw_data: raw_data in ["R", "A"] + identifiers,
+            validate=lambda raw_data: raw_data in ["R", "A", "I"] + identifiers,
         )
 
         def redirect_to_tournament(player_id: int) -> Callable:
@@ -102,7 +121,47 @@ class TournamentController(AbstractController):
             {
                 **{
                     "R": lambda: self.redirect("tournament_read", [identifier]),
-                    "A": lambda: self.redirect("tournament_register", [identifier]),
+                    "I": lambda: self.redirect("tournament_registration", [identifier]),
+                },
+                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
+            },
+        )
+
+    def registration(self, identifier: int):
+        """
+        Registration player in tournament
+        :param identifier:
+        :return:
+        """
+        tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        players: List[Player] = [
+            player for player in self.__player_gateway.find_all() if player not in tournament.players
+        ]
+
+        representation: Representation = self.__representation_factory.create()
+        representation.add_header(Header(1, "Identifiant", lambda player: str(player.identifier)))
+        representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
+        representation.set_data(players)
+        representation.render()
+
+        identifiers: List[Any] = list(map(lambda player: str(player.identifier), players))
+
+        input_: Input = Input(
+            label="Saisissez l'identifiant d'un joueur que vous souhaitez inscrire ou R pour retour : ",
+            message="Veuillez saisir 'R' ou un identifiant parmi la liste.",
+            transform=str,
+            validate=lambda raw_data: raw_data in ["R"] + identifiers,
+        )
+
+        def redirect_to_tournament(player_id: int) -> Callable:
+            return lambda: self.redirect("tournament_register", [identifier, int(player_id)])
+
+        self._choice(
+            input_,
+            {
+                **{
+                    "R": lambda: self.redirect("tournament_players", [identifier]),
                 },
                 **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
             },
@@ -155,7 +214,7 @@ class TournamentController(AbstractController):
             label="Que souhaitez-vous faire ? ",
             message="Veuillez saisir un action.",
             transform=str,
-            validate=lambda raw_data: raw_data in ["R", "J"],
+            validate=lambda raw_data: raw_data in ["R", "J", "I"],
         )
 
         tournament: Tournament = self.__tournament_gateway.find(identifier)
@@ -165,6 +224,7 @@ class TournamentController(AbstractController):
             {
                 "R": lambda: self.redirect("tournament_list"),
                 "J": lambda: self.redirect("tournament_players", [identifier]),
+                "I": lambda: self.redirect("tournament_registration", [identifier]),
             },
             "tournament/read",
             {
