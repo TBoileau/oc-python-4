@@ -221,7 +221,7 @@ class TournamentController(AbstractController):
             label="Que souhaitez-vous faire ? ",
             message="Veuillez saisir un action.",
             transform=str,
-            validate=lambda raw_data: raw_data in ["R", "J", "I", "M", "D"],
+            validate=lambda raw_data: raw_data in ["R", "J", "I", "M", "D", "C"],
         )
 
         tournament: Tournament = self.__tournament_gateway.find(identifier)
@@ -234,6 +234,7 @@ class TournamentController(AbstractController):
                 "M": lambda: self.redirect("tournament_update", [identifier]),
                 "D": lambda: self.redirect("tournament_start", [identifier]),
                 "I": lambda: self.redirect("tournament_registration", [identifier]),
+                "C": lambda: self.redirect("tournament_ranking", [identifier]),
             },
             "tournament/read",
             {
@@ -308,3 +309,34 @@ class TournamentController(AbstractController):
         self.__tournament_gateway.update(tournament)
         Console.print("Tournois démarré avec succès !", Console.SUCCESS)
         self.redirect("tournament_read", [identifier])
+
+    def ranking(self, identifier: int):
+        """
+        Tournament's ranking
+
+        :param identifier:
+        :return:
+        """
+        tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        tournament.generate_ranking()
+
+        representation: Representation = self.__representation_factory.create()
+        representation.add_header(Header(1, "Rang", lambda player: str(player.rank)))
+        representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
+        representation.add_header(Header(3, "Points", lambda player: str(player.points)))
+        representation.add_header(Header(4, "Nombre de matchs", lambda player: str(len(player.opponents))))
+        representation.set_data(tournament.players)
+        representation.render()
+
+        input_: Input = Input(
+            label="Saisissez R pour retour : ",
+            message="Veuillez saisir R.",
+        )
+
+        self._choice(
+            input_,
+            {
+                "R": lambda: self.redirect("tournament_read", [identifier]),
+            },
+        )

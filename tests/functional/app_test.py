@@ -58,6 +58,15 @@ def test_app(capfd, monkeypatch):
     #Start tournament 'Tournois 2'
     enter_input('D')
     #Return to show tournament 'Tournois 2'
+    #Return to tournaments list
+    enter_input('R')
+    #Show 'Tournois 1'
+    enter_input('1')
+    #Ranking 'Tournois 2'
+    enter_input('C')
+    #Return to show tournament 'Tournois 1'
+    enter_input('R')
+    #Return to tournaments list
     enter_input('R')
     #Return to home
     enter_input('0')
