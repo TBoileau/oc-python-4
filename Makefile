@@ -9,12 +9,13 @@ freeze:
 prepare:
 	python3 -m pip install --upgrade pip
 	python3 -m venv $(VENV_NAME)
-	cp .env.dist .env
-	sed -i -e 's/db/db_dev/' .env
+	cp .env.dist .env.dev
+	sed -i -e 's/db/db_dev/' .env.dev
+	make fixtures env=dev
 	cp .env.dist .env.test
 	sed -i -e 's/db/db_test/' .env.test
-	cp fixtures.json db_test.json
-	cp fixtures.json db_dev.json
+	make fixtures env=test
+
 
 install:
 	pip install --no-cache-dir wheel
@@ -35,9 +36,12 @@ analyse:
 	$(PYTHON) -m pycodestyle --max-line-length=120 ./src
 
 tests:
-	rm db_test.json
-	cp fixtures.json db_test.json
-	$(PYTHON) -m pytest --cov=./src --cov-report=html
+	make fixtures env=test
+	$(PYTHON) -m pytest --cov=./src --cov-report=html -s
+
+fixtures:
+	[ -e db_$(env).json ] && rm db_$(env).json
+	cp fixtures.json db_$(env).json
 
 run:
 	$(PYTHON) main.py
