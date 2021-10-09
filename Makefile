@@ -40,7 +40,7 @@ tests:
 	$(PYTHON) -m pytest --cov=./src --cov-report=html -s
 
 fixtures:
-	[ -e db_$(env).json ] && rm db_$(env).json
+	touch db_$(env).json && rm db_$(env).json
 	cp fixtures.json db_$(env).json
 
 run:
