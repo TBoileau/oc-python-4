@@ -12,8 +12,9 @@ prepare:
 	cp .env.dist .env
 	sed -i -e 's/db/db_dev/' .env
 	cp .env.dist .env.test
-	cp fixtures.json db_test.json
 	sed -i -e 's/db/db_test/' .env.test
+	cp fixtures.json db_test.json
+	cp fixtures.json db_dev.json
 
 install:
 	pip install --no-cache-dir wheel

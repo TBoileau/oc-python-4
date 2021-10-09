@@ -49,7 +49,6 @@ class Player(Serializable):
 
     def serialize(self) -> Dict[str, Any]:
         return {
-            "id": self.identifier,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "birthday": self.birthday.isoformat(),
