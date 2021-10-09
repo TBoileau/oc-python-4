@@ -1,7 +1,6 @@
 """Imported modules/packages"""
 import re
 import sys
-import time
 
 from src.controller.abstract_controller import AbstractController
 from src.input.input import Input
@@ -19,7 +18,6 @@ class AppController(AbstractController):
         :return:
         """
         self.render("app/quit")
-        time.sleep(3)
         sys.exit()
 
     def home(self):

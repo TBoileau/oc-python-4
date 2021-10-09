@@ -1,5 +1,4 @@
 """Imported modules/packages"""
-import time
 from typing import List, Callable, Any
 
 from src.controller.abstract_controller import AbstractController
@@ -48,7 +47,6 @@ class TournamentController(AbstractController):
         def handler(tournament: Tournament):
             self.__tournament_gateway.persist(tournament)
             Console.print("Tournois enregistré avec succès !", Console.SUCCESS)
-            time.sleep(3)
             self.redirect("tournament_list")
 
         form: TournamentForm = TournamentForm(handler)
@@ -93,7 +91,7 @@ class TournamentController(AbstractController):
 
         Console.print("Joueur inscrit avec succès.", Console.SUCCESS)
 
-        self.redirect("tournament_players", [identifier])
+        self.redirect("tournament_registration", [identifier])
 
     def players(self, identifier: int):
         """
@@ -270,7 +268,6 @@ class TournamentController(AbstractController):
         def handler(tournament_: Tournament):
             self.__tournament_gateway.update(tournament_)
             Console.print("Tournois modifié avec succès !", Console.SUCCESS)
-            time.sleep(3)
             self.redirect("tournament_read", [identifier])
 
         form: TournamentForm = TournamentForm(handler, tournament)
@@ -310,5 +307,4 @@ class TournamentController(AbstractController):
 
         self.__tournament_gateway.update(tournament)
         Console.print("Tournois démarré avec succès !", Console.SUCCESS)
-        time.sleep(3)
         self.redirect("tournament_read", [identifier])
