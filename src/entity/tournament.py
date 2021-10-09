@@ -118,7 +118,6 @@ class Tournament(Serializable, Subject):
 
     def serialize(self) -> Dict[str, Any]:
         return {
-            "id": self.identifier,
             "name": self.name,
             "state": self.state,
             "description": self.description,

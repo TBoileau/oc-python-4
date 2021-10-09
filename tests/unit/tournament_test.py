@@ -1,5 +1,4 @@
 """Imported modules/packages"""
-import uuid
 from datetime import datetime, date
 
 import pytest
@@ -9,7 +8,7 @@ from src.entity.tournament import Tournament
 
 
 def test_tournament():
-    tournament: Tournament = Tournament('Name', 'Description', 'Location', datetime.now(), None, Tournament.TYPE_BLITZ)
+    tournament: Tournament = Tournament('Tournois 1', 'Description', 'Paris', datetime.now(), None, Tournament.TYPE_BLITZ)
 
     with pytest.raises(AssertionError):
         tournament.start()

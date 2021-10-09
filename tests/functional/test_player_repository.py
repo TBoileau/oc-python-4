@@ -26,12 +26,12 @@ def test_find():
 def test_find_all():
     player_factory: PlayerFactoryInterface = PlayerFactory()
     player_repository: PlayerGateway = PlayerRepository(tiny_db, player_factory)
-    assert len(player_repository.find_all()) == 1
+    assert len(player_repository.find_all()) == 8
 
 def test_persist():
     player_factory: PlayerFactoryInterface = PlayerFactory()
     player_repository: PlayerGateway = PlayerRepository(tiny_db, player_factory)
     player: Player = Player('Doe', 'John', date.today(), Player.GENDER_MALE, 1)
     player_repository.persist(player)
-    assert len(player_repository.find_all()) == 2
+    assert len(player_repository.find_all()) == 9
     assert player_repository.find(player.identifier) is not None
