@@ -43,6 +43,7 @@ class App:
         """
 
         load_dotenv(".env")
+        load_dotenv(f".env.{os.getenv('APP_ENV')}")
         self.build()
         self.routing()
         self.__container.get(Router).generate("app_home")
