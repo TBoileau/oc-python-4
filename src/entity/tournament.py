@@ -29,6 +29,8 @@ class Tournament(Serializable, Subject):
         number_of_rounds: int = 4,
         state: str = "pending",
         identifier: int = None,
+        players: List[Player] = None,
+        rounds: List[Round] = None,
     ):
         """
         Constructor
@@ -42,6 +44,9 @@ class Tournament(Serializable, Subject):
         :param number_of_rounds:
         :param state:
         :param identifier:
+        :param players:
+        :param rounds:
+        :param participants:
         """
         self.identifier: int = identifier
         self.name: str = name
@@ -49,8 +54,8 @@ class Tournament(Serializable, Subject):
         self.location: str = location
         self.started_at: datetime = started_at
         self.ended_at: Optional[datetime] = ended_at
-        self.players: List[Player] = []
-        self.rounds: List[Round] = []
+        self.players: List[Player] = players if players is not None else []
+        self.rounds: List[Round] = rounds if rounds is not None else []
         self.time_control: str = time_control
         self.number_of_rounds: int = number_of_rounds
         self.__current_round_position: int = 0
@@ -75,7 +80,6 @@ class Tournament(Serializable, Subject):
         """
         assert len(self.players) > 0
         assert len(self.players) % 2 == 0
-
         return self.new_round()
 
     @property
@@ -104,6 +108,8 @@ class Tournament(Serializable, Subject):
         """
         assert self.__current_round_position < self.number_of_rounds
 
+        self.generate_ranking()
+
         if self.__current_round_position > 0:
             assert self.current_round.ended
             self.current_round.end()
@@ -112,7 +118,7 @@ class Tournament(Serializable, Subject):
 
         players: List[Player] = self.players
 
-        self.rounds.append(Round(self.__current_round_position, datetime.now(), players).start())
+        self.rounds.append(Round(self.__current_round_position, datetime.now(), players, [], None).start())
 
         return self
 
@@ -149,3 +155,28 @@ class Tournament(Serializable, Subject):
             "finish": Transition("finish", ["started"], "finished"),
             "delete": Transition("delete", ["pending"], "deleted"),
         }
+
+    def generate_ranking(self):
+        """
+        Generate ranking
+
+        :return:
+        """
+        for player in self.players:
+            player.points = 0
+            player.opponents = []
+
+        for round_ in self.rounds:
+            for match in round_.matches:
+                match.set_points()
+
+        self.players.sort(key=lambda player: player.points, reverse=True)
+
+        temp_player: Optional[Player] = None
+
+        rank: int = 1
+
+        for player in self.players:
+            player.rank = rank if temp_player is None or temp_player.points != player.points else temp_player.rank
+            temp_player = player
+            rank += 1

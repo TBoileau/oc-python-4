@@ -14,17 +14,28 @@ class Round(Serializable):
     Round class
     """
 
-    def __init__(self, position: int, started_at: datetime, players: List[Player], ended_at: Optional[datetime] = None):
+    def __init__(
+        self,
+        position: int,
+        started_at: datetime,
+        players: List[Player],
+        matches: List[Match],
+        ended_at: Optional[datetime] = None,
+    ):
         """
         Constructor
 
         :param position:
+        :param started_at:
+        :param players:
+        :param matches:
+        :param ended_at:
         """
         self.position: int = position
         self.started_at: datetime = started_at
         self.ended_at: Optional[datetime] = ended_at
         self.players: List[Player] = players
-        self.matches: List[Match] = []
+        self.matches: List[Match] = matches
 
     def end(self) -> "Round":
         """

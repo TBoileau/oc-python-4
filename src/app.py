@@ -4,6 +4,10 @@ import os
 from dotenv import load_dotenv
 from tinydb import TinyDB
 
+from src.factory.match_factory import MatchFactory
+from src.factory.match_factory_interface import MatchFactoryInterface
+from src.factory.round_factory import RoundFactory
+from src.factory.round_factory_interface import RoundFactoryInterface
 from src.workflow.workflow import Workflow
 from src.workflow.workflow_interface import WorkflowInterface
 from src.factory.player_factory import PlayerFactory
@@ -62,6 +66,8 @@ class App:
         self.__container.alias(TournamentGateway, TournamentRepository)
         self.__container.alias(PlayerGateway, PlayerRepository)
         self.__container.alias(PlayerFactoryInterface, PlayerFactory)
+        self.__container.alias(RoundFactoryInterface, RoundFactory)
+        self.__container.alias(MatchFactoryInterface, MatchFactory)
         self.__container.alias(TournamentFactoryInterface, TournamentFactory)
         self.__container.alias(RepresentationFactoryInterface, RepresentationFactory)
         self.__container.alias(WorkflowInterface, Workflow)
@@ -84,3 +90,4 @@ class App:
         router.add(Route("tournament_unregister", TournamentController, "unregister"))
         router.add(Route("tournament_registration", TournamentController, "registration"))
         router.add(Route("tournament_start", TournamentController, "start"))
+        router.add(Route("tournament_ranking", TournamentController, "ranking"))

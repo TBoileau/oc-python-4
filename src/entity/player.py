@@ -33,6 +33,7 @@ class Player(Serializable):
         self.gender: str = gender
         self.ranking: int = ranking
         self.points: float = 0
+        self.rank: float = 0
         self.opponents: List["Player"] = []
         self.identifier: int = identifier
 
