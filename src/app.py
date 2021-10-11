@@ -94,3 +94,4 @@ class App:
         router.add(Route("tournament_ranking", TournamentController, "ranking"))
         router.add(Route("player_list", PlayerController, "list"))
         router.add(Route("player_create", PlayerController, "create"))
+        router.add(Route("player_update", PlayerController, "update"))

@@ -16,13 +16,21 @@ class PlayerForm(Form):
     """
 
     def _transform(self, values: Dict[str, Any], data: Optional[Player] = None) -> Player:
-        return Player(
-            first_name=values["first_name"],
-            last_name=values["last_name"],
-            birthday=values["birthday"],
-            gender=values["gender"],
-            ranking=values["ranking"],
-        )
+        if data is None:
+            return Player(
+                first_name=values["first_name"],
+                last_name=values["last_name"],
+                birthday=values["birthday"],
+                gender=values["gender"],
+                ranking=values["ranking"],
+            )
+
+        data.first_name = values["first_name"]
+        data.last_name = values["last_name"]
+        data.birthday = values["birthday"]
+        data.gender = values["gender"]
+        data.ranking = values["ranking"]
+        return data
 
     def _build(self, inputs: Dict[str, Input]):
         date_pattern: Pattern = re.compile(r"^\d{2}\/\d{2}\/\d{4}$")
