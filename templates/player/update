@@ -1,0 +1,6 @@
+Identifiant : {identifier}
+Genre : {gender}
+Nom : {last_name}
+Prenom : {first_name}
+Date de naissance : {birthday}
+Classement : {ranking}
