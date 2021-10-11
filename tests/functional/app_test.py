@@ -70,6 +70,16 @@ def test_app(capfd, monkeypatch):
     enter_input('R')
     #Return to home
     enter_input('0')
+    #List players
+    enter_input('4')
+    #Create player
+    enter_input('C')
+    enter_input('Thomas')
+    enter_input('Boileau')
+    enter_input('H')
+    enter_input('17/09/1988')
+    enter_input('1')
+    enter_input('R')
     #Quit
     enter_input('0')
 

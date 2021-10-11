@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from tinydb import TinyDB
 
+from src.controller.player_controller import PlayerController
 from src.factory.match_factory import MatchFactory
 from src.factory.match_factory_interface import MatchFactoryInterface
 from src.factory.round_factory import RoundFactory
@@ -91,3 +92,5 @@ class App:
         router.add(Route("tournament_registration", TournamentController, "registration"))
         router.add(Route("tournament_start", TournamentController, "start"))
         router.add(Route("tournament_ranking", TournamentController, "ranking"))
+        router.add(Route("player_list", PlayerController, "list"))
+        router.add(Route("player_create", PlayerController, "create"))
