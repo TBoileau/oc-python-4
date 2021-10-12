@@ -56,3 +56,12 @@ class Player(Serializable):
             "gender": self.gender,
             "ranking": self.ranking,
         }
+
+    @property
+    def full_name(self) -> str:
+        """
+        Get full name
+
+        :return:
+        """
+        return f"{self.first_name} {self.last_name}"

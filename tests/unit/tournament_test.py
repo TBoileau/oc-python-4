@@ -158,7 +158,5 @@ def test_tournament():
     assert player_7.points == 2.5
     assert player_8.points == 0
 
-    with pytest.raises(AssertionError):
-        tournament.new_round()
 
     assert True == tournament.ended

@@ -22,6 +22,7 @@ class MatchFactory(MatchFactoryInterface):
 
     def create(self, data: Document) -> Match:
         return Match(
+            identifier=int(data["identifier"]),
             white_player=self.__player_gateway.find(int(data["white_player"])),
             black_player=self.__player_gateway.find(int(data["black_player"])),
             winner=self.__player_gateway.find(int(data["winner"])) if data["winner"] is not None else None,

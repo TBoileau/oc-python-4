@@ -58,7 +58,7 @@ class Tournament(Serializable, Subject):
         self.rounds: List[Round] = rounds if rounds is not None else []
         self.time_control: str = time_control
         self.number_of_rounds: int = number_of_rounds
-        self.__current_round_position: int = 0
+        self.__current_round_position: int = len(self.rounds)
         self.state: str = state
 
     def register(self, player: Player) -> "Tournament":
@@ -106,7 +106,7 @@ class Tournament(Serializable, Subject):
 
         :return:
         """
-        assert self.__current_round_position < self.number_of_rounds
+        assert self.__current_round_position <= self.number_of_rounds
 
         self.generate_ranking()
 
@@ -114,11 +114,15 @@ class Tournament(Serializable, Subject):
             assert self.current_round.ended
             self.current_round.end()
 
+        if self.__current_round_position == self.number_of_rounds:
+            self.ended_at = datetime.now()
+            return self
+
         self.__current_round_position += 1
 
         players: List[Player] = self.players
 
-        self.rounds.append(Round(self.__current_round_position, datetime.now(), players, [], None).start())
+        self.rounds.append(Round(self.__current_round_position, players, []).start())
 
         return self
 
