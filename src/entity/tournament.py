@@ -118,7 +118,7 @@ class Tournament(Serializable, Subject):
 
         players: List[Player] = self.players
 
-        self.rounds.append(Round(self.__current_round_position, datetime.now(), players, [], None).start())
+        self.rounds.append(Round(self.__current_round_position, players, []).start())
 
         return self
 

@@ -221,7 +221,7 @@ class TournamentController(AbstractController):
             label="Que souhaitez-vous faire ? ",
             message="Veuillez saisir un action.",
             transform=str,
-            validate=lambda raw_data: raw_data in ["R", "J", "I", "M", "D", "C"],
+            validate=lambda raw_data: raw_data in ["R", "J", "I", "M", "D", "C", "T"],
         )
 
         tournament: Tournament = self.__tournament_gateway.find(identifier)
@@ -235,6 +235,7 @@ class TournamentController(AbstractController):
                 "D": lambda: self.redirect("tournament_start", [identifier]),
                 "I": lambda: self.redirect("tournament_registration", [identifier]),
                 "C": lambda: self.redirect("tournament_ranking", [identifier]),
+                "T": lambda: self.redirect("round_list", [identifier]),
             },
             "tournament/read",
             {

@@ -17,9 +17,9 @@ class Round(Serializable):
     def __init__(
         self,
         position: int,
-        started_at: datetime,
         players: List[Player],
         matches: List[Match],
+        started_at: Optional[datetime] = None,
         ended_at: Optional[datetime] = None,
     ):
         """
@@ -32,7 +32,7 @@ class Round(Serializable):
         :param ended_at:
         """
         self.position: int = position
-        self.started_at: datetime = started_at
+        self.started_at: Optional[datetime] = started_at
         self.ended_at: Optional[datetime] = ended_at
         self.players: List[Player] = players
         self.matches: List[Match] = matches
@@ -65,12 +65,33 @@ class Round(Serializable):
         """
         return len(self.players) // 2 == len(list(filter(lambda match: match.ended, self.matches)))
 
+    @property
+    def pending_matches(self) -> List[Match]:
+        """
+        Get pending matches
+
+        :return:
+        """
+        return [match for match in self.matches if match.ended is None]
+
+    @property
+    def finished_matches(self) -> List[Match]:
+        """
+        Get pending matches
+
+        :return:
+        """
+        return [match for match in self.matches if match.ended is not None]
+
     def start(self) -> "Round":
         """
         Start the round
 
         :return:
         """
+
+        self.started_at = datetime.now()
+
         self.players.sort(key=lambda player: (player.points, len(self.players) - player.ranking), reverse=True)
 
         if self.position == 1:
