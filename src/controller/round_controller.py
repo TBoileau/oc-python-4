@@ -2,6 +2,7 @@
 from typing import List, Callable
 
 from src.controller.abstract_controller import AbstractController
+from src.entity.round import Round
 from src.entity.tournament import Tournament
 from src.gateway.tournament_gateway import TournamentGateway
 from src.input.input import Input
@@ -28,25 +29,66 @@ class RoundController(AbstractController):
         self.__tournament_gateway: TournamentGateway = tournament_gateway
         self.__representation_factory: RepresentationFactoryInterface = representation_factory
 
+    def read(self, identifier: int, position: int):
+        """
+        Show round
+
+        :param identifier:
+        :param position:
+        :return:
+        """
+        tournament: Tournament = self.__tournament_gateway.find(identifier)
+
+        round_: Round = next(round_ for round_ in tournament.rounds if round_.position == position)
+
+        representation: Representation = self.__representation_factory.create()
+        representation.add_header(
+            Header(1, "Statut", lambda match: "Terminé" if match.ended is not None else "En cours")
+        )
+        representation.add_header(Header(2, "Joueur Blanc", lambda match: match.white_player.full_name))
+        representation.add_header(
+            Header(3, "", lambda match: ("V" if match.winner == match.white_player else "") if match.ended else "")
+        )
+        representation.add_header(
+            Header(4, "", lambda match: ("N" if match.winner is None else "") if match.ended else "")
+        )
+        representation.add_header(
+            Header(5, "", lambda match: ("V" if match.winner == match.black_player else "") if match.ended else "")
+        )
+        representation.add_header(Header(6, "Joueur Noir", lambda match: match.black_player.full_name))
+        representation.set_data(round_.matches)
+        representation.render()
+
+        input_: Input = Input(
+            label="Saisissez R pour retour : ",
+            message="Veuillez saisir R.",
+            validate=lambda raw_data: raw_data in ["R"],
+        )
+
+        self._choice(
+            input_,
+            {"R": lambda: self.redirect("round_list", [identifier])},
+        )
+
     def list(self, identifier: int):
         """
-        List rounds
+        List round_s
 
         :return:
         """
         tournament: Tournament = self.__tournament_gateway.find(identifier)
 
         representation: Representation = self.__representation_factory.create()
-        representation.add_header(Header(1, "Nom", lambda round: round.name))
-        representation.add_header(Header(2, "Matchs en cours", lambda round: str(len(round.pending_matches))))
-        representation.add_header(Header(3, "Matchs terminés", lambda round: str(len(round.finished_matches))))
+        representation.add_header(Header(1, "Nom", lambda round_: round_.name))
+        representation.add_header(Header(2, "Matchs en cours", lambda round_: str(len(round_.pending_matches))))
+        representation.add_header(Header(3, "Matchs terminés", lambda round_: str(len(round_.finished_matches))))
         representation.add_header(
-            Header(4, "Statut", lambda round: "Terminé" if round.ended_at is not None else "En cours")
+            Header(4, "Statut", lambda round_: "Terminé" if round_.ended_at is not None else "En cours")
         )
         representation.set_data(tournament.rounds)
         representation.render()
 
-        identifiers: List[str] = list(map(lambda round: str(round.position), tournament.rounds))
+        identifiers: List[str] = list(map(lambda round_: str(round_.position), tournament.rounds))
 
         input_: Input = Input(
             label="Saisissez l'identifiant d'une ronde que vous souhaitez sélectionner (R pour quitter) : ",

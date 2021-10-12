@@ -97,3 +97,4 @@ class App:
         router.add(Route("player_create", PlayerController, "create"))
         router.add(Route("player_update", PlayerController, "update"))
         router.add(Route("round_list", RoundController, "list"))
+        router.add(Route("round_read", RoundController, "read"))

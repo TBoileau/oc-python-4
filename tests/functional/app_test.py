@@ -68,6 +68,10 @@ def test_app(capfd, monkeypatch):
     enter_input('R')
     #Show rounds
     enter_input('T')
+    #Show first round
+    enter_input('1')
+    #Return to list of rounds
+    enter_input('R')
     #Return to show tournament 'Tournois 1'
     enter_input('R')
     #Return to tournaments list
