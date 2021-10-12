@@ -11,14 +11,23 @@ class Match(Serializable):
     """
 
     def __init__(
-        self, white_player: Player, black_player: Player, winner: Optional[Player] = None, ended: bool = False
+        self,
+        identifier: int,
+        white_player: Player,
+        black_player: Player,
+        winner: Optional[Player] = None,
+        ended: bool = False,
     ):
         """
         Constructor
 
+        :param identifier:
         :param white_player:
         :param black_player:
+        :param winner:
+        :param ended:
         """
+        self.identifier: int = identifier
         self.white_player: Player = white_player.play_against(black_player)
         self.black_player: Player = black_player.play_against(white_player)
         self.winner: Optional[Player] = winner
@@ -69,6 +78,7 @@ class Match(Serializable):
 
     def serialize(self) -> Dict[str, Any]:
         return {
+            "identifier": self.identifier,
             "white_player": self.white_player.identifier,
             "black_player": self.black_player.identifier,
             "winner": self.winner.identifier if self.winner is not None else None,

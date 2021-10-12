@@ -58,6 +58,19 @@ def test_app(capfd, monkeypatch):
     #Start tournament 'Tournois 2'
     enter_input('D')
     #Return to show tournament 'Tournois 2'
+    #List of rounds
+    enter_input('T')
+    #Show round 1
+    enter_input('1')
+    #Set result of match 1
+    enter_input('1')
+    #Set winner Black
+    enter_input('B')
+    #Return to show round 1
+    #Return to list of rounds
+    enter_input('R')
+    #Return to show tournament 'Tournois 2'
+    enter_input('R')
     #Return to tournaments list
     enter_input('R')
     #Show 'Tournois 1'
