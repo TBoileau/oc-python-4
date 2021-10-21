@@ -1,4 +1,4 @@
-from src.app import App
+from src.app_kernel import App
 
 
 if __name__ == '__main__':

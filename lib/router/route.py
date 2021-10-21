@@ -1,7 +1,7 @@
 """Imported modules/packages"""
 from typing import Type, List, Any
 
-from src.dependency_injection.container import ContainerInterface
+from lib.dependency_injection.container import ContainerInterface
 
 
 class Route:

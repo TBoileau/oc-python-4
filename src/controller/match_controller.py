@@ -1,13 +1,14 @@
 """Imported modules/packages"""
-from src.controller.abstract_controller import AbstractController
+from lib.controller.abstract_controller import AbstractController
+from lib.helper.console import Console
+from lib.input.input import Input
+from lib.router.router_interface import RouterInterface
+from lib.templating.templating_interface import TemplatingInterface
+
 from src.entity.match import Match
 from src.entity.round import Round
 from src.entity.tournament import Tournament
 from src.gateway.tournament_gateway import TournamentGateway
-from src.helper.console import Console
-from src.input.input import Input
-from src.router.router_interface import RouterInterface
-from src.templating.templating_interface import TemplatingInterface
 
 
 class MatchController(AbstractController):

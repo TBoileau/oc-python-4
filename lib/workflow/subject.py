@@ -2,7 +2,7 @@
 from abc import ABC
 from typing import Dict
 
-from src.workflow.transition import Transition
+from lib.workflow.transition import Transition
 
 
 class Subject(ABC):

@@ -2,7 +2,7 @@
 from abc import ABC
 from typing import Dict, Any, Optional, Callable
 
-from src.input.input import Input
+from lib.input.input import Input
 
 
 class Form(ABC):

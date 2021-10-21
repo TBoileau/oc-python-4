@@ -1,10 +1,22 @@
 """Imported modules/packages"""
 import importlib
 import inspect
+import os
 from types import ModuleType
 from typing import Any, Dict, List, Type, Union
 
-from src.dependency_injection.container_interface import ContainerInterface
+from tinydb import TinyDB
+
+from lib.dependency_injection.container_interface import ContainerInterface
+from lib.representation.representation_factory import RepresentationFactory
+from lib.representation.representation_factory_interface import RepresentationFactoryInterface
+from lib.router.router import Router
+from lib.router.router_interface import RouterInterface
+from lib.templating.templating import Templating
+from lib.templating.templating_interface import TemplatingInterface
+from lib.tinydb.tinydb_factory import TinyDBFactory
+from lib.workflow.workflow import Workflow
+from lib.workflow.workflow_interface import WorkflowInterface
 
 
 class Container(ContainerInterface):
@@ -19,6 +31,12 @@ class Container(ContainerInterface):
     def __init__(self):
         self.__instances["container"] = self
         self.alias(ContainerInterface, Container)
+        self.set_parameter("templating_directory", os.path.join(os.getcwd(), "templates"))
+        self.set(TinyDB, TinyDBFactory.create(os.getenv("DB_URL")))
+        self.alias(TemplatingInterface, Templating)
+        self.alias(RouterInterface, Router)
+        self.alias(RepresentationFactoryInterface, RepresentationFactory)
+        self.alias(WorkflowInterface, Workflow)
 
     @staticmethod
     def get_type(name: Union[Type, str]) -> str:

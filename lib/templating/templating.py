@@ -2,7 +2,7 @@
 import locale
 import os.path
 
-from src.templating.templating_interface import TemplatingInterface
+from lib.templating.templating_interface import TemplatingInterface
 
 
 class Templating(TemplatingInterface):

@@ -4,9 +4,9 @@ from typing import Optional, List, Dict, Any
 
 from src.entity.player import Player
 from src.entity.round import Round
-from src.serializer.serializable import Serializable
-from src.workflow.subject import Subject
-from src.workflow.transition import Transition
+from lib.serializer.serializable import Serializable
+from lib.workflow.subject import Subject
+from lib.workflow.transition import Transition
 
 
 class Tournament(Serializable, Subject):

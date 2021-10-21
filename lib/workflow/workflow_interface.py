@@ -1,7 +1,7 @@
 """Imported modules/packages"""
 from abc import ABC
 
-from src.workflow.subject import Subject
+from lib.workflow.subject import Subject
 
 
 class WorkflowInterface(ABC):

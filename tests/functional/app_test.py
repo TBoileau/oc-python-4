@@ -4,7 +4,7 @@ import io
 import pytest
 from dotenv import load_dotenv
 
-from src.app import App
+from src.app_kernel import AppKernel
 
 load_dotenv('.env.test')
 stdin: str  = ""
@@ -116,5 +116,5 @@ def test_app(capfd, monkeypatch):
     monkeypatch.setattr('sys.stdin', io.StringIO(stdin))
 
     with pytest.raises(SystemExit):
-        app: App = App()
+        app: AppKernel = AppKernel()
         app.run()

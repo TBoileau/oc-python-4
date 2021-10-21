@@ -2,7 +2,7 @@
 from abc import ABC
 from typing import Any, List
 
-from src.representation.header import Header
+from lib.representation.header import Header
 
 
 class RepresentationInterface(ABC):

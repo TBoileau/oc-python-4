@@ -6,7 +6,7 @@ from typing import List, Optional, Dict, Any
 
 from src.entity.match import Match
 from src.entity.player import Player
-from src.serializer.serializable import Serializable
+from lib.serializer.serializable import Serializable
 
 
 class Round(Serializable):

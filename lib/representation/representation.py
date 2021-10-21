@@ -1,9 +1,9 @@
 """Imported modules/packages"""
 from typing import Dict, Any, List, Tuple
 
-from src.helper.string import String
-from src.representation.header import Header
-from src.representation.representation_interface import RepresentationInterface
+from lib.helper.string import String
+from lib.representation.header import Header
+from lib.representation.representation_interface import RepresentationInterface
 
 
 class Representation(RepresentationInterface):

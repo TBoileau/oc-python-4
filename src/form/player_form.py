@@ -5,9 +5,9 @@ from re import Pattern
 from typing import Dict, Any, Optional
 
 from src.entity.player import Player
-from src.form.form import Form
-from src.helper.datetime import Datetime
-from src.input.input import Input
+from lib.form.form import Form
+from lib.helper.datetime import Datetime
+from lib.input.input import Input
 
 
 class PlayerForm(Form):

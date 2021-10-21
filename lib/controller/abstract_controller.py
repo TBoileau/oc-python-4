@@ -2,10 +2,10 @@
 from abc import ABC
 from typing import Callable, Dict, Any, List
 
-from src.form.form import Form
-from src.input.input import Input
-from src.router.router import RouterInterface
-from src.templating.templating import TemplatingInterface
+from lib.form.form import Form
+from lib.input.input import Input
+from lib.router.router import RouterInterface
+from lib.templating.templating import TemplatingInterface
 
 
 class AbstractController(ABC):

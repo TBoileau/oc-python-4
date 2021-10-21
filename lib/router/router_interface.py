@@ -2,7 +2,7 @@
 from abc import ABC
 from typing import List, Any
 
-from src.router.route import Route
+from lib.router.route import Route
 
 
 class RouterInterface(ABC):

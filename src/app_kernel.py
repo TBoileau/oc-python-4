@@ -1,8 +1,8 @@
 """Imported modules/packages"""
-import os
-
-from dotenv import load_dotenv
-from tinydb import TinyDB
+from lib.kernel import Kernel
+from lib.dependency_injection.container import ContainerInterface
+from lib.router.route import Route
+from lib.router.router_interface import RouterInterface
 
 from src.controller.match_controller import MatchController
 from src.controller.round_controller import RoundController
@@ -11,77 +11,35 @@ from src.factory.match_factory import MatchFactory
 from src.factory.match_factory_interface import MatchFactoryInterface
 from src.factory.round_factory import RoundFactory
 from src.factory.round_factory_interface import RoundFactoryInterface
-from src.workflow.workflow import Workflow
-from src.workflow.workflow_interface import WorkflowInterface
 from src.factory.player_factory import PlayerFactory
 from src.factory.player_factory_interface import PlayerFactoryInterface
 from src.factory.tournament_factory import TournamentFactory
 from src.factory.tournament_factory_interface import TournamentFactoryInterface
-from src.representation.representation_factory import RepresentationFactory
-from src.representation.representation_factory_interface import RepresentationFactoryInterface
-from src.tinydb.tinydb_factory import TinyDBFactory
 from src.controller.app_controller import AppController
 from src.controller.tournament_controller import TournamentController
-from src.dependency_injection.container import ContainerInterface, Container
 from src.gateway.player_gateway import PlayerGateway
 from src.gateway.tournament_gateway import TournamentGateway
 from src.repository.player_repository import PlayerRepository
 from src.repository.tournament_repository import TournamentRepository
-from src.router.route import Route
-from src.router.router import Router
-from src.router.router_interface import RouterInterface
-from src.templating.templating import Templating
-from src.templating.templating_interface import TemplatingInterface
 
 
-class App:
+class AppKernel(Kernel):
     """
-    App class
+    AppKernel class
     """
 
-    def __init__(self):
-        self.__container: ContainerInterface = Container()
+    def start(self, router: RouterInterface):
+        router.generate("app_home")
 
-    def run(self):
-        """
-        Run app
+    def build(self, container: ContainerInterface):
+        container.alias(TournamentGateway, TournamentRepository)
+        container.alias(PlayerGateway, PlayerRepository)
+        container.alias(PlayerFactoryInterface, PlayerFactory)
+        container.alias(RoundFactoryInterface, RoundFactory)
+        container.alias(MatchFactoryInterface, MatchFactory)
+        container.alias(TournamentFactoryInterface, TournamentFactory)
 
-        :return:
-        """
-
-        load_dotenv(".env")
-        load_dotenv(f".env.{os.getenv('APP_ENV')}")
-        self.build()
-        self.routing()
-        self.__container.get(Router).generate("app_home")
-
-    def build(self):
-        """
-        Build container
-
-        :return:
-        """
-
-        self.__container.set_parameter("templating_directory", os.path.join(os.getcwd(), "templates"))
-        self.__container.set(TinyDB, TinyDBFactory.create(os.getenv("DB_URL")))
-        self.__container.alias(TemplatingInterface, Templating)
-        self.__container.alias(RouterInterface, Router)
-        self.__container.alias(TournamentGateway, TournamentRepository)
-        self.__container.alias(PlayerGateway, PlayerRepository)
-        self.__container.alias(PlayerFactoryInterface, PlayerFactory)
-        self.__container.alias(RoundFactoryInterface, RoundFactory)
-        self.__container.alias(MatchFactoryInterface, MatchFactory)
-        self.__container.alias(TournamentFactoryInterface, TournamentFactory)
-        self.__container.alias(RepresentationFactoryInterface, RepresentationFactory)
-        self.__container.alias(WorkflowInterface, Workflow)
-
-    def routing(self):
-        """
-        Define routes
-
-        :return:
-        """
-        router: RouterInterface = self.__container.get(RouterInterface)
+    def routing(self, router: RouterInterface):
         router.add(Route("app_home", AppController, "home"))
         router.add(Route("app_quit", AppController, "quit"))
         router.add(Route("tournament_create", TournamentController, "create"))

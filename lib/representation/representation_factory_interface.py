@@ -1,7 +1,7 @@
 """Imported modules/packages"""
 from abc import ABC
 
-from src.representation.representation import Representation
+from lib.representation.representation import Representation
 
 
 class RepresentationFactoryInterface(ABC):

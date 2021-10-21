@@ -1,7 +1,7 @@
 """Imported modules/packages"""
 from typing import Any, Callable
 
-from src.helper.console import Console
+from lib.helper.console import Console
 
 
 class Input:

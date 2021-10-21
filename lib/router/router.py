@@ -1,9 +1,9 @@
 """Imported modules/packages"""
 from typing import Dict, List, Any
 
-from src.dependency_injection.container import ContainerInterface
-from src.router.route import Route
-from src.router.router_interface import RouterInterface
+from lib.dependency_injection.container import ContainerInterface
+from lib.router.route import Route
+from lib.router.router_interface import RouterInterface
 
 
 class Router(RouterInterface):

@@ -2,7 +2,7 @@
 from datetime import date
 from typing import List, Dict, Any
 
-from src.serializer.serializable import Serializable
+from lib.serializer.serializable import Serializable
 
 
 class Player(Serializable):

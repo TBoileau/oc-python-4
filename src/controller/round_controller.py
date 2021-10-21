@@ -1,16 +1,17 @@
 """Imported modules/packages"""
 from typing import List, Callable
 
-from src.controller.abstract_controller import AbstractController
+from lib.controller.abstract_controller import AbstractController
+from lib.input.input import Input
+from lib.representation.header import Header
+from lib.representation.representation import Representation
+from lib.representation.representation_factory_interface import RepresentationFactoryInterface
+from lib.router.router_interface import RouterInterface
+from lib.templating.templating_interface import TemplatingInterface
+
 from src.entity.round import Round
 from src.entity.tournament import Tournament
 from src.gateway.tournament_gateway import TournamentGateway
-from src.input.input import Input
-from src.representation.header import Header
-from src.representation.representation import Representation
-from src.representation.representation_factory_interface import RepresentationFactoryInterface
-from src.router.router_interface import RouterInterface
-from src.templating.templating_interface import TemplatingInterface
 
 
 class RoundController(AbstractController):

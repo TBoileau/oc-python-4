@@ -2,8 +2,8 @@
 import re
 import sys
 
-from src.controller.abstract_controller import AbstractController
-from src.input.input import Input
+from lib.controller.abstract_controller import AbstractController
+from lib.input.input import Input
 
 
 class AppController(AbstractController):

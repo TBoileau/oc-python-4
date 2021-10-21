@@ -1,6 +1,6 @@
 """Imported modules/packages"""
-from src.representation.representation import Representation
-from src.representation.representation_factory_interface import RepresentationFactoryInterface
+from lib.representation.representation import Representation
+from lib.representation.representation_factory_interface import RepresentationFactoryInterface
 
 
 class RepresentationFactory(RepresentationFactoryInterface):

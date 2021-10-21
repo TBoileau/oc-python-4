@@ -2,7 +2,7 @@
 from typing import Dict, Any, List, Optional
 
 from src.entity.player import Player
-from src.serializer.serializable import Serializable
+from lib.serializer.serializable import Serializable
 
 
 class Match(Serializable):

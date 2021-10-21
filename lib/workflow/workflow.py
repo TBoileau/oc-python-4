@@ -1,7 +1,7 @@
 """Imported modules/packages"""
-from src.workflow.subject import Subject
-from src.workflow.transition import Transition
-from src.workflow.workflow_interface import WorkflowInterface
+from lib.workflow.subject import Subject
+from lib.workflow.transition import Transition
+from lib.workflow.workflow_interface import WorkflowInterface
 
 
 class Workflow(WorkflowInterface):
