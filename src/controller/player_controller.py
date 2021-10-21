@@ -6,13 +6,9 @@ from lib.helper.console import Console
 from lib.input.input import Input
 from lib.representation.header import Header
 from lib.representation.representation import Representation
-from lib.representation.representation_factory_interface import RepresentationFactoryInterface
-from lib.router.router_interface import RouterInterface
-from lib.templating.templating_interface import TemplatingInterface
 
 from src.entity.player import Player
 from src.form.player_form import PlayerForm
-from src.gateway.player_gateway import PlayerGateway
 
 
 class PlayerController(AbstractController):
@@ -20,26 +16,15 @@ class PlayerController(AbstractController):
     Player controller
     """
 
-    def __init__(
-        self,
-        templating: TemplatingInterface,
-        router: RouterInterface,
-        player_gateway: PlayerGateway,
-        representation_factory: RepresentationFactoryInterface,
-    ):
-        super().__init__(templating, router)
-        self.__player_gateway: PlayerGateway = player_gateway
-        self.__representation_factory: RepresentationFactoryInterface = representation_factory
-
     def list(self):
         """
-        Liste players
+        List players
 
         :return:
         """
-        players: List[Player] = self.__player_gateway.find_all()
+        players: List[Player] = self._entity_manager.get_repository(Player).find_all()
 
-        representation: Representation = self.__representation_factory.create()
+        representation: Representation = self._representation_factory.create()
         representation.add_header(Header(1, "Identifiant", lambda player: str(player.identifier)))
         representation.add_header(Header(2, "Genre", lambda player: player.gender))
         representation.add_header(Header(3, "Prénom", lambda player: player.first_name))
@@ -75,10 +60,10 @@ class PlayerController(AbstractController):
         :param identifier:
         :return:
         """
-        player: Player = self.__player_gateway.find(identifier)
+        player: Player = self._entity_manager.get_repository(Player).find(identifier)
 
         def handler(player: Player):
-            self.__player_gateway.persist(player)
+            self._entity_manager.persist(player)
             Console.print("Joueur modifié avec succès !", Console.SUCCESS)
             self.redirect("player_list")
 
@@ -104,7 +89,7 @@ class PlayerController(AbstractController):
         """
 
         def handler(player: Player):
-            self.__player_gateway.persist(player)
+            self._entity_manager.persist(player)
             Console.print("Joueur enregistré avec succès !", Console.SUCCESS)
             self.redirect("player_list")
 

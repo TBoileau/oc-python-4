@@ -1,15 +1,19 @@
 """Imported modules/packages"""
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Type
 
-from src.entity.player import Player
-from src.entity.round import Round
-from lib.serializer.serializable import Serializable
+from tinydb.table import Document
+
+from lib.orm.entity_manager_interface import EntityManagerInterface
+from lib.orm.persistent import Persistent
 from lib.workflow.subject import Subject
 from lib.workflow.transition import Transition
 
+from src.entity.player import Player
+from src.entity.round import Round
 
-class Tournament(Serializable, Subject):
+
+class Tournament(Persistent, Subject):
     """
     Tournament class
     """
@@ -184,3 +188,25 @@ class Tournament(Serializable, Subject):
             player.rank = rank if temp_player is None or temp_player.points != player.points else temp_player.rank
             temp_player = player
             rank += 1
+
+    @staticmethod
+    def create(data: Document, entity_manager: EntityManagerInterface) -> "Tournament":
+        return Tournament(
+            identifier=data.doc_id,
+            name=data["name"],
+            description=data["description"],
+            state=data["state"],
+            location=data["location"],
+            started_at=datetime.fromisoformat(data["started_at"]),
+            ended_at=datetime.fromisoformat(data["ended_at"]) if data["ended_at"] is not None else None,
+            time_control=data["time_control"],
+            number_of_rounds=int(data["number_of_rounds"]),
+            players=list(map(lambda player: entity_manager.get_repository(Player).find, data["players"])),
+            rounds=list(map(lambda round: Round.create(round, entity_manager), data["rounds"])),
+        )
+
+    @staticmethod
+    def get_repository() -> Type:
+        from src.repository.tournament_repository import TournamentRepository
+
+        return TournamentRepository

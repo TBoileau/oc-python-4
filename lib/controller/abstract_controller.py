@@ -4,8 +4,11 @@ from typing import Callable, Dict, Any, List
 
 from lib.form.form import Form
 from lib.input.input import Input
+from lib.orm.entity_manager_interface import EntityManagerInterface
+from lib.representation.representation_factory_interface import RepresentationFactoryInterface
 from lib.router.router import RouterInterface
 from lib.templating.templating import TemplatingInterface
+from lib.workflow.workflow_interface import WorkflowInterface
 
 
 class AbstractController(ABC):
@@ -13,9 +16,19 @@ class AbstractController(ABC):
     Abstract controller
     """
 
-    def __init__(self, templating: TemplatingInterface, router: RouterInterface):
+    def __init__(
+        self,
+        templating: TemplatingInterface,
+        router: RouterInterface,
+        entity_manager: EntityManagerInterface,
+        representation_factory: RepresentationFactoryInterface,
+        workflow: WorkflowInterface,
+    ):
         self.__templating: TemplatingInterface = templating
         self.__router: RouterInterface = router
+        self._entity_manager: EntityManagerInterface = entity_manager
+        self._representation_factory: RepresentationFactoryInterface = representation_factory
+        self._workflow: WorkflowInterface = workflow
 
     def render(self, view: str, data=None):
         """

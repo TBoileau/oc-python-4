@@ -6,37 +6,16 @@ from lib.helper.console import Console
 from lib.input.input import Input
 from lib.representation.header import Header
 from lib.representation.representation import Representation
-from lib.representation.representation_factory_interface import RepresentationFactoryInterface
-from lib.router.router_interface import RouterInterface
-from lib.templating.templating_interface import TemplatingInterface
-from lib.workflow.workflow_interface import WorkflowInterface
 
 from src.entity.player import Player
 from src.entity.tournament import Tournament
 from src.form.tournament_form import TournamentForm
-from src.gateway.player_gateway import PlayerGateway
-from src.gateway.tournament_gateway import TournamentGateway
 
 
 class TournamentController(AbstractController):
     """
     App controller
     """
-
-    def __init__(
-        self,
-        templating: TemplatingInterface,
-        router: RouterInterface,
-        tournament_gateway: TournamentGateway,
-        player_gateway: PlayerGateway,
-        representation_factory: RepresentationFactoryInterface,
-        workflow: WorkflowInterface,
-    ):
-        super().__init__(templating, router)
-        self.__tournament_gateway: TournamentGateway = tournament_gateway
-        self.__player_gateway: PlayerGateway = player_gateway
-        self.__representation_factory: RepresentationFactoryInterface = representation_factory
-        self.__workflow: WorkflowInterface = workflow
 
     def create(self):
         """
@@ -46,7 +25,7 @@ class TournamentController(AbstractController):
         """
 
         def handler(tournament: Tournament):
-            self.__tournament_gateway.persist(tournament)
+            self._entity_manager.persist(tournament)
             Console.print("Tournois enregistré avec succès !", Console.SUCCESS)
             self.redirect("tournament_list")
 
@@ -60,16 +39,16 @@ class TournamentController(AbstractController):
         :param player_id:
         :return:
         """
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
         if tournament.get_state() != "pending":
             Console.print("Vous ne pouvez pas inscrire un joueur alors dans un tournois commencé.", Console.FAIL)
 
-        player: Player = self.__player_gateway.find(player_id)
+        player: Player = self._entity_manager.get_repository(Player).find(player_id)
 
         tournament.players.remove(player)
 
-        self.__tournament_gateway.update(tournament)
+        self._entity_manager.update(tournament)
 
         Console.print("Joueur désinscrit avec succès.", Console.SUCCESS)
 
@@ -82,13 +61,13 @@ class TournamentController(AbstractController):
         :param player_id:
         :return:
         """
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
-        player: Player = self.__player_gateway.find(player_id)
+        player: Player = self._entity_manager.get_repository(Player).find(player_id)
 
         tournament.players.append(player)
 
-        self.__tournament_gateway.update(tournament)
+        self._entity_manager.update(tournament)
 
         Console.print("Joueur inscrit avec succès.", Console.SUCCESS)
 
@@ -100,9 +79,9 @@ class TournamentController(AbstractController):
         :param identifier:
         :return:
         """
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
-        representation: Representation = self.__representation_factory.create()
+        representation: Representation = self._representation_factory.create()
         representation.add_header(Header(1, "Identifiant", lambda player: str(player.identifier)))
         representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
         representation.set_data(tournament.players)
@@ -138,16 +117,18 @@ class TournamentController(AbstractController):
         :param identifier:
         :return:
         """
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
         if tournament.get_state() != "pending":
             Console.print("Vous ne pouvez pas inscrire un joueur alors dans un tournois commencé.", Console.FAIL)
 
         players: List[Player] = [
-            player for player in self.__player_gateway.find_all() if player not in tournament.players
+            player
+            for player in self._entity_manager.get_repository(Player).find_all()
+            if player not in tournament.players
         ]
 
-        representation: Representation = self.__representation_factory.create()
+        representation: Representation = self._representation_factory.create()
         representation.add_header(Header(1, "Identifiant", lambda player: str(player.identifier)))
         representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
         representation.set_data(players)
@@ -181,9 +162,9 @@ class TournamentController(AbstractController):
 
         :return:
         """
-        tournaments: List[Tournament] = self.__tournament_gateway.find_all()
+        tournaments: List[Tournament] = self._entity_manager.get_repository(Tournament).find_all()
 
-        representation: Representation = self.__representation_factory.create()
+        representation: Representation = self._representation_factory.create()
         representation.add_header(Header(1, "Identifiant", lambda tournament: str(tournament.identifier)))
         representation.add_header(Header(2, "Nom", lambda tournament: tournament.name))
         representation.add_header(Header(3, "Statut", lambda tournament: tournament.state))
@@ -207,6 +188,7 @@ class TournamentController(AbstractController):
             {
                 **{0: lambda: self.redirect("app_home")},
                 **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
+                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
             },
         )
 
@@ -225,7 +207,7 @@ class TournamentController(AbstractController):
             validate=lambda raw_data: raw_data in ["R", "J", "I", "M", "D", "C", "T"],
         )
 
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
         self._choice(
             input_,
@@ -263,13 +245,13 @@ class TournamentController(AbstractController):
         :return:
         """
 
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
         if tournament.get_state() != "pending":
             Console.print("Vous ne pouvez pas modifier un tournois commencé.", Console.FAIL)
 
         def handler(tournament_: Tournament):
-            self.__tournament_gateway.update(tournament_)
+            self._entity_manager.update(tournament_)
             Console.print("Tournois modifié avec succès !", Console.SUCCESS)
             self.redirect("tournament_read", [identifier])
 
@@ -300,15 +282,15 @@ class TournamentController(AbstractController):
         :param identifier:
         :return:
         """
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
-        if not self.__workflow.can(tournament, "start"):
+        if not self._workflow.can(tournament, "start"):
             Console.print("Vous ne pouvez pas démarrer ce tournois.", Console.FAIL)
             self.redirect("tournament_read", [identifier])
 
-        self.__workflow.apply(tournament, "start")
+        self._workflow.apply(tournament, "start")
 
-        self.__tournament_gateway.update(tournament)
+        self._entity_manager.update(tournament)
         Console.print("Tournois démarré avec succès !", Console.SUCCESS)
         self.redirect("tournament_read", [identifier])
 
@@ -319,11 +301,11 @@ class TournamentController(AbstractController):
         :param identifier:
         :return:
         """
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
         tournament.generate_ranking()
 
-        representation: Representation = self.__representation_factory.create()
+        representation: Representation = self._representation_factory.create()
         representation.add_header(Header(1, "Rang", lambda player: str(player.rank)))
         representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
         representation.add_header(Header(3, "Points", lambda player: str(player.points)))

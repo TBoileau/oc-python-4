@@ -2,28 +2,16 @@
 from lib.controller.abstract_controller import AbstractController
 from lib.helper.console import Console
 from lib.input.input import Input
-from lib.router.router_interface import RouterInterface
-from lib.templating.templating_interface import TemplatingInterface
 
 from src.entity.match import Match
 from src.entity.round import Round
 from src.entity.tournament import Tournament
-from src.gateway.tournament_gateway import TournamentGateway
 
 
 class MatchController(AbstractController):
     """
     Round controller
     """
-
-    def __init__(
-        self,
-        templating: TemplatingInterface,
-        router: RouterInterface,
-        tournament_gateway: TournamentGateway,
-    ):
-        super().__init__(templating, router)
-        self.__tournament_gateway: TournamentGateway = tournament_gateway
 
     def result(self, identifier: int, position: int, match_identifier: int):
         """
@@ -34,7 +22,7 @@ class MatchController(AbstractController):
         :param match_identifier:
         :return:
         """
-        tournament: Tournament = self.__tournament_gateway.find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
 
         round_: Round = next(round_ for round_ in tournament.rounds if round_.position == position)
 
@@ -61,6 +49,6 @@ class MatchController(AbstractController):
         if len(round_.pending_matches) == 0:
             tournament.new_round()
 
-        self.__tournament_gateway.update(tournament)
+        self._entity_manager.update(tournament)
 
         self.redirect("round_read", [identifier, tournament.current_round.position])

@@ -8,15 +8,6 @@ from typing import Any, Dict, List, Type, Union
 from tinydb import TinyDB
 
 from lib.dependency_injection.container_interface import ContainerInterface
-from lib.representation.representation_factory import RepresentationFactory
-from lib.representation.representation_factory_interface import RepresentationFactoryInterface
-from lib.router.router import Router
-from lib.router.router_interface import RouterInterface
-from lib.templating.templating import Templating
-from lib.templating.templating_interface import TemplatingInterface
-from lib.tinydb.tinydb_factory import TinyDBFactory
-from lib.workflow.workflow import Workflow
-from lib.workflow.workflow_interface import WorkflowInterface
 
 
 class Container(ContainerInterface):
@@ -32,11 +23,23 @@ class Container(ContainerInterface):
         self.__instances["container"] = self
         self.alias(ContainerInterface, Container)
         self.set_parameter("templating_directory", os.path.join(os.getcwd(), "templates"))
+        from lib.orm.entity_manager import EntityManager
+        from lib.orm.entity_manager_interface import EntityManagerInterface
+        from lib.representation.representation_factory import RepresentationFactory
+        from lib.representation.representation_factory_interface import RepresentationFactoryInterface
+        from lib.router.router import Router
+        from lib.router.router_interface import RouterInterface
+        from lib.templating.templating import Templating
+        from lib.templating.templating_interface import TemplatingInterface
+        from lib.orm.tinydb.tinydb_factory import TinyDBFactory
+        from lib.workflow.workflow import Workflow
+        from lib.workflow.workflow_interface import WorkflowInterface
         self.set(TinyDB, TinyDBFactory.create(os.getenv("DB_URL")))
         self.alias(TemplatingInterface, Templating)
         self.alias(RouterInterface, Router)
         self.alias(RepresentationFactoryInterface, RepresentationFactory)
         self.alias(WorkflowInterface, Workflow)
+        self.alias(EntityManagerInterface, EntityManager)
 
     @staticmethod
     def get_type(name: Union[Type, str]) -> str:
