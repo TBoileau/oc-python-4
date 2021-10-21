@@ -4,7 +4,7 @@ import io
 import pytest
 from dotenv import load_dotenv
 
-from src.app import App
+from src.app_kernel import AppKernel
 
 load_dotenv('.env.test')
 stdin: str  = ""
@@ -49,8 +49,10 @@ def test_app(capfd, monkeypatch):
     #Register player 2
     enter_input('3')
     #Registration player tournament 'Tournois 2'
-    #Return to list of players
+    #Return to tournament
     enter_input('R')
+    #Lst of players
+    enter_input('J')
     #Delete player 3
     enter_input('3')
     #Return to show tournament 'Tournois 2'
@@ -90,11 +92,13 @@ def test_app(capfd, monkeypatch):
     #Return to tournaments list
     enter_input('R')
     #Return to home
-    enter_input('0')
+    enter_input('R')
     #List players
     enter_input('4')
+    #Return to home
+    enter_input('R')
     #Create player
-    enter_input('C')
+    enter_input('3')
     enter_input('Thomas')
     enter_input('Boileau')
     enter_input('H')
@@ -116,5 +120,5 @@ def test_app(capfd, monkeypatch):
     monkeypatch.setattr('sys.stdin', io.StringIO(stdin))
 
     with pytest.raises(SystemExit):
-        app: App = App()
+        app: AppKernel = AppKernel()
         app.run()

@@ -4,12 +4,17 @@ import random
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 
+from tinydb.table import Document
+
+from lib.orm.entity import Entity
+from lib.orm.entity_manager_interface import EntityManagerInterface
+from lib.serializer.serializable import Serializable
+
 from src.entity.match import Match
 from src.entity.player import Player
-from src.serializer.serializable import Serializable
 
 
-class Round(Serializable):
+class Round(Serializable, Entity):
     """
     Round class
     """
@@ -138,3 +143,13 @@ class Round(Serializable):
             "matches": list(map(lambda match: match.serialize(), self.matches)),
             "players": list(map(lambda player: player.identifier, self.players)),
         }
+
+    @staticmethod
+    def create(data: Document, entity_manager: EntityManagerInterface) -> "Round":
+        return Round(
+            position=int(data["position"]),
+            started_at=datetime.fromisoformat(data["started_at"]),
+            ended_at=datetime.fromisoformat(data["ended_at"]) if data["ended_at"] is not None else None,
+            players=list(map(entity_manager.get_repository(Player).find, map(int, data["players"]))),
+            matches=list(map(lambda match: Match.create(match, entity_manager), data["matches"])),
+        )

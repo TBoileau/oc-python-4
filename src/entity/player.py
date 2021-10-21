@@ -1,11 +1,14 @@
 """Imported modules/packages"""
 from datetime import date
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Type
 
-from src.serializer.serializable import Serializable
+from tinydb.table import Document
+
+from lib.orm.entity_manager_interface import EntityManagerInterface
+from lib.orm.persistent import Persistent
 
 
-class Player(Serializable):
+class Player(Persistent):
     """
     Player class
     """
@@ -65,3 +68,20 @@ class Player(Serializable):
         :return:
         """
         return f"{self.first_name} {self.last_name}"
+
+    @staticmethod
+    def create(data: Document, entity_manager: EntityManagerInterface) -> "Player":
+        return Player(
+            identifier=data.doc_id,
+            last_name=data["last_name"],
+            first_name=data["first_name"],
+            birthday=date.fromisoformat(data["birthday"]),
+            gender=data["gender"],
+            ranking=int(data["ranking"]),
+        )
+
+    @staticmethod
+    def get_repository() -> Type:
+        from src.repository.player_repository import PlayerRepository
+
+        return PlayerRepository

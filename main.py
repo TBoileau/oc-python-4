@@ -1,6 +1,6 @@
-from src.app import App
+from src.app_kernel import AppKernel
 
 
 if __name__ == '__main__':
-    app: App = App()
-    app.run()
+    kernel: AppKernel = AppKernel()
+    kernel.run()

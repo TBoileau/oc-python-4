@@ -1,11 +1,16 @@
 """Imported modules/packages"""
 from typing import Dict, Any, List, Optional
 
+from tinydb.table import Document
+
+from lib.orm.entity import Entity
+from lib.orm.entity_manager_interface import EntityManagerInterface
+from lib.serializer.serializable import Serializable
+
 from src.entity.player import Player
-from src.serializer.serializable import Serializable
 
 
-class Match(Serializable):
+class Match(Serializable, Entity):
     """
     Match class
     """
@@ -84,3 +89,15 @@ class Match(Serializable):
             "winner": self.winner.identifier if self.winner is not None else None,
             "ended": self.ended,
         }
+
+    @staticmethod
+    def create(data: Document, entity_manager: EntityManagerInterface) -> "Match":
+        return Match(
+            identifier=int(data["identifier"]),
+            white_player=entity_manager.get_repository(Player).find(int(data["white_player"])),
+            black_player=entity_manager.get_repository(Player).find(int(data["black_player"])),
+            winner=entity_manager.get_repository(Player).find(int(data["winner"]))
+            if data["winner"] is not None
+            else None,
+            ended=bool(data["ended"]),
+        )
