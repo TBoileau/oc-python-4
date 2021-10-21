@@ -1,0 +1,20 @@
+Identifiant : {identifier}
+Nom : {name}
+Description : {description}
+Localisation : {location}
+Début : {started_at}
+Fin : {ended_at}
+Nombre de rondes : {number_of_rounds}
+Nombre de joueurs inscrits : {number_of_players}
+Type : {time_control}
+Statut : {state}
+
+
+Actions :
+- R : Retour
+- M : Modifier
+- D : Démarrer
+- T : Liste des rondes
+- J : Liste des joueurs
+- I : Inscrire un joueur
+- C : Classement
