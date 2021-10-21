@@ -1,11 +1,10 @@
 """Imported modules/packages"""
-from typing import List, Callable, Any
+from typing import List
 
 from lib.controller.abstract_controller import AbstractController
 from lib.helper.console import Console
 from lib.input.input import Input
 from lib.representation.header import Header
-from lib.representation.representation import Representation
 
 from src.entity.player import Player
 from src.entity.tournament import Tournament
@@ -43,8 +42,15 @@ class TournamentController(AbstractController):
 
         if tournament.get_state() != "pending":
             Console.print("Vous ne pouvez pas inscrire un joueur alors dans un tournois commencé.", Console.FAIL)
+            self.redirect("tournament_players", [identifier])
+            return
 
-        player: Player = self._entity_manager.get_repository(Player).find(player_id)
+        if player_id not in list(map(lambda player: player.identifier, tournament.players)):
+            Console.print("Ce joueur n'est pas inscrit au tournois.", Console.FAIL)
+            self.redirect("tournament_players", [identifier])
+            return
+
+        player: Player = next(player for player in tournament.players if player.identifier == player_id)
 
         tournament.players.remove(player)
 
@@ -73,51 +79,34 @@ class TournamentController(AbstractController):
 
         self.redirect("tournament_registration", [identifier])
 
-    def players(self, identifier: int):
+    def players(self, tournament_identifier: int):
         """
         List tournaments players
-        :param identifier:
+        :param tournament_identifier:
         :return:
         """
-        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(tournament_identifier)
 
-        representation: Representation = self._representation_factory.create()
-        representation.add_header(Header(1, "Identifiant", lambda player: str(player.identifier)))
-        representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
-        representation.set_data(tournament.players)
-        representation.render()
-
-        identifiers: List[Any] = list(map(lambda player: str(player.identifier), tournament.players))
-
-        input_: Input = Input(
-            label="Saisissez l'identifiant d'un joueur que vous souhaitez désinscrire"
-            ", I pour inscrire un joueur ou R pour retour : ",
-            message="Veuillez saisir 'A', 'R', 'I ou un identifiant parmi la liste.",
-            transform=str,
-            validate=lambda raw_data: raw_data in ["R", "A", "I"] + identifiers,
+        self._list(
+            headers=[
+                Header(1, "Identifiant", lambda player: str(player.identifier)),
+                Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"),
+            ],
+            data=tournament.players,
+            callback=lambda player: str(player.identifier),
+            route="tournament_unregister",
+            route_params=lambda identifier: [tournament_identifier, int(identifier)],
+            backward="tournament_read",
+            backward_params=[tournament_identifier],
         )
 
-        def redirect_to_tournament(player_id: int) -> Callable:
-            return lambda: self.redirect("tournament_unregister", [identifier, int(player_id)])
-
-        self._choice(
-            input_,
-            {
-                **{
-                    "R": lambda: self.redirect("tournament_read", [identifier]),
-                    "I": lambda: self.redirect("tournament_registration", [identifier]),
-                },
-                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
-            },
-        )
-
-    def registration(self, identifier: int):
+    def registration(self, tournament_identifier: int):
         """
         Registration player in tournament
-        :param identifier:
+        :param tournament_identifier:
         :return:
         """
-        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(tournament_identifier)
 
         if tournament.get_state() != "pending":
             Console.print("Vous ne pouvez pas inscrire un joueur alors dans un tournois commencé.", Console.FAIL)
@@ -128,32 +117,17 @@ class TournamentController(AbstractController):
             if player not in tournament.players
         ]
 
-        representation: Representation = self._representation_factory.create()
-        representation.add_header(Header(1, "Identifiant", lambda player: str(player.identifier)))
-        representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
-        representation.set_data(players)
-        representation.render()
-
-        identifiers: List[Any] = list(map(lambda player: str(player.identifier), players))
-
-        input_: Input = Input(
-            label="Saisissez l'identifiant d'un joueur que vous souhaitez inscrire ou R pour retour : ",
-            message="Veuillez saisir 'R' ou un identifiant parmi la liste.",
-            transform=str,
-            validate=lambda raw_data: raw_data in ["R"] + identifiers,
-        )
-
-        def redirect_to_tournament(player_id: int) -> Callable:
-            return lambda: self.redirect("tournament_register", [identifier, int(player_id)])
-
-        self._choice(
-            input_,
-            {
-                **{
-                    "R": lambda: self.redirect("tournament_players", [identifier]),
-                },
-                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
-            },
+        self._list(
+            headers=[
+                Header(1, "Identifiant", lambda player: str(player.identifier)),
+                Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"),
+            ],
+            data=players,
+            callback=lambda player: str(player.identifier),
+            route="tournament_register",
+            route_params=lambda identifier: [tournament_identifier, int(identifier)],
+            backward="tournament_read",
+            backward_params=[tournament_identifier],
         )
 
     def list(self):
@@ -162,34 +136,17 @@ class TournamentController(AbstractController):
 
         :return:
         """
-        tournaments: List[Tournament] = self._entity_manager.get_repository(Tournament).find_all()
-
-        representation: Representation = self._representation_factory.create()
-        representation.add_header(Header(1, "Identifiant", lambda tournament: str(tournament.identifier)))
-        representation.add_header(Header(2, "Nom", lambda tournament: tournament.name))
-        representation.add_header(Header(3, "Statut", lambda tournament: tournament.state))
-        representation.set_data(tournaments)
-        representation.render()
-
-        identifiers: List[int] = list(map(lambda tournament: tournament.identifier, tournaments))
-
-        input_: Input = Input(
-            label="Saisissez l'identifiant du tournois que vous souhaitez sélectionner (0 pour quitter) : ",
-            message="Veuillez saisir 0 ou un identifiant parmi la liste.",
-            transform=int,
-            validate=lambda raw_data: raw_data.isnumeric() and int(raw_data) in [0] + identifiers,
-        )
-
-        def redirect_to_tournament(identifier: int) -> Callable:
-            return lambda: self.redirect("tournament_read", [identifier])
-
-        self._choice(
-            input_,
-            {
-                **{0: lambda: self.redirect("app_home")},
-                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
-                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
-            },
+        self._list(
+            headers=[
+                Header(1, "Identifiant", lambda tournament: str(tournament.identifier)),
+                Header(2, "Nom", lambda tournament: tournament.name),
+                Header(3, "Statut", lambda tournament: tournament.state),
+            ],
+            data=self._entity_manager.get_repository(Tournament).find_all(),
+            callback=lambda tournament: str(tournament.identifier),
+            route="tournament_read",
+            route_params=lambda identifier: [int(identifier)],
+            backward="app_home",
         )
 
     def read(self, identifier: int):
@@ -305,22 +262,15 @@ class TournamentController(AbstractController):
 
         tournament.generate_ranking()
 
-        representation: Representation = self._representation_factory.create()
-        representation.add_header(Header(1, "Rang", lambda player: str(player.rank)))
-        representation.add_header(Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"))
-        representation.add_header(Header(3, "Points", lambda player: str(player.points)))
-        representation.add_header(Header(4, "Nombre de matchs", lambda player: str(len(player.opponents))))
-        representation.set_data(tournament.players)
-        representation.render()
-
-        input_: Input = Input(
-            label="Saisissez R pour retour : ",
-            message="Veuillez saisir R.",
-        )
-
-        self._choice(
-            input_,
-            {
-                "R": lambda: self.redirect("tournament_read", [identifier]),
-            },
+        self._list(
+            headers=[
+                Header(1, "Rang", lambda player: str(player.rank)),
+                Header(2, "Nom", lambda player: f"{player.first_name} {player.last_name}"),
+                Header(3, "Points", lambda player: str(player.points)),
+                Header(4, "Nombre de matchs", lambda player: str(len(player.opponents))),
+            ],
+            data=tournament.players,
+            callback=lambda tournament: str(tournament.identifier),
+            backward="tournament_read",
+            backward_params=[identifier],
         )

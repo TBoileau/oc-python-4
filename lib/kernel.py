@@ -14,9 +14,9 @@ class Kernel(ABC):
     """
 
     def __init__(self):
-        self.__container: ContainerInterface = Container()
         load_dotenv(".env")
         load_dotenv(f".env.{os.getenv('APP_ENV')}")
+        self.__container: ContainerInterface = Container()
 
     def run(self):
         """

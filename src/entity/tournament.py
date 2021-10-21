@@ -201,8 +201,8 @@ class Tournament(Persistent, Subject):
             ended_at=datetime.fromisoformat(data["ended_at"]) if data["ended_at"] is not None else None,
             time_control=data["time_control"],
             number_of_rounds=int(data["number_of_rounds"]),
-            players=list(map(lambda player: entity_manager.get_repository(Player).find, data["players"])),
-            rounds=list(map(lambda round: Round.create(round, entity_manager), data["rounds"])),
+            players=list(map(entity_manager.get_repository(Player).find, data["players"])),
+            rounds=list(map(lambda round_: Round.create(round_, entity_manager), data["rounds"])),
         )
 
     @staticmethod

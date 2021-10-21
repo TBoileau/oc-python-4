@@ -1,10 +1,6 @@
 """Imported modules/packages"""
-from typing import List, Callable
-
 from lib.controller.abstract_controller import AbstractController
-from lib.input.input import Input
 from lib.representation.header import Header
-from lib.representation.representation import Representation
 
 from src.entity.round import Round
 from src.entity.tournament import Tournament
@@ -15,87 +11,53 @@ class RoundController(AbstractController):
     Round controller
     """
 
-    def read(self, identifier: int, position: int):
+    def read(self, tournament_identifier: int, position: int):
         """
         Show round
 
-        :param identifier:
+        :param tournament_identifier:
         :param position:
         :return:
         """
-        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
+        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(tournament_identifier)
 
         round_: Round = next(round_ for round_ in tournament.rounds if round_.position == position)
 
-        representation: Representation = self._representation_factory.create()
-        representation.add_header(Header(1, "Identifier", lambda match: str(match.identifier)))
-        representation.add_header(Header(2, "Statut", lambda match: "Terminé" if match.ended is True else "En cours"))
-        representation.add_header(Header(3, "Joueur Blanc", lambda match: match.white_player.full_name))
-        representation.add_header(
-            Header(4, "", lambda match: ("V" if match.winner == match.white_player else "") if match.ended else "")
-        )
-        representation.add_header(
-            Header(5, "", lambda match: ("N" if match.winner is None else "") if match.ended else "")
-        )
-        representation.add_header(
-            Header(6, "", lambda match: ("V" if match.winner == match.black_player else "") if match.ended else "")
-        )
-        representation.add_header(Header(7, "Joueur Noir", lambda match: match.black_player.full_name))
-        representation.set_data(round_.matches)
-        representation.render()
-
-        identifiers: List[str] = list(map(lambda match: str(match.identifier), round_.pending_matches))
-
-        input_: Input = Input(
-            label="Saisissez R pour retour ou l'identifier d'un match en cours pour saisir le résultat: ",
-            message="Veuillez saisir R ou un identifiant.",
-            validate=lambda raw_data: raw_data in ["R"] + identifiers,
+        self._list(
+            headers=[
+                Header(1, "Identifier", lambda match: str(match.identifier)),
+                Header(2, "Statut", lambda match: "Terminé" if match.ended is True else "En cours"),
+                Header(3, "Joueur Blanc", lambda match: match.white_player.full_name),
+                Header(4, "", lambda match: ("V" if match.winner == match.white_player else "") if match.ended else ""),
+                Header(5, "", lambda match: ("N" if match.winner is None else "") if match.ended else ""),
+                Header(6, "", lambda match: ("V" if match.winner == match.black_player else "") if match.ended else ""),
+                Header(7, "Joueur Noir", lambda match: match.black_player.full_name),
+            ],
+            data=round_.matches,
+            callback=lambda match: str(match.identifier),
+            route="match_result",
+            route_params=lambda identifier: [tournament_identifier, position, int(identifier)],
+            backward="round_list",
+            backward_params=[tournament_identifier],
         )
 
-        def redirect_to_tournament(match_id: str) -> Callable:
-            return lambda: self.redirect("match_result", [identifier, position, int(match_id)])
-
-        self._choice(
-            input_,
-            {
-                **{"R": lambda: self.redirect("round_list", [identifier])},
-                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
-            },
-        )
-
-    def list(self, identifier: int):
+    def list(self, tournament_identifier: int):
         """
         List rounds
 
         :return:
         """
-        tournament: Tournament = self._entity_manager.get_repository(Tournament).find(identifier)
-
-        representation: Representation = self._representation_factory.create()
-        representation.add_header(Header(1, "Nom", lambda round_: round_.name))
-        representation.add_header(Header(2, "Matchs en cours", lambda round_: str(len(round_.pending_matches))))
-        representation.add_header(Header(3, "Matchs terminés", lambda round_: str(len(round_.finished_matches))))
-        representation.add_header(
-            Header(4, "Statut", lambda round_: "Terminé" if round_.ended_at is not None else "En cours")
-        )
-        representation.set_data(tournament.rounds)
-        representation.render()
-
-        identifiers: List[str] = list(map(lambda round_: str(round_.position), tournament.rounds))
-
-        input_: Input = Input(
-            label="Saisissez l'identifiant d'une ronde que vous souhaitez sélectionner (R pour quitter) : ",
-            message="Veuillez saisir R ou un identifiant parmi la liste.",
-            validate=lambda raw_data: raw_data in ["R"] + identifiers,
-        )
-
-        def redirect_to_tournament(position: str) -> Callable:
-            return lambda: self.redirect("round_read", [identifier, int(position)])
-
-        self._choice(
-            input_,
-            {
-                **{"R": lambda: self.redirect("tournament_read", [identifier])},
-                **dict(zip(identifiers, map(redirect_to_tournament, identifiers))),
-            },
+        self._list(
+            headers=[
+                Header(1, "Nom", lambda round_: round_.name),
+                Header(2, "Matchs en cours", lambda round_: str(len(round_.pending_matches))),
+                Header(3, "Matchs terminés", lambda round_: str(len(round_.finished_matches))),
+                Header(4, "Statut", lambda round_: "Terminé" if round_.ended_at is not None else "En cours"),
+            ],
+            data=self._entity_manager.get_repository(Tournament).find(tournament_identifier).rounds,
+            callback=lambda round_: str(round_.position),
+            route="round_read",
+            route_params=lambda position: [tournament_identifier, int(position)],
+            backward="tournament_read",
+            backward_params=[tournament_identifier],
         )
